@@ -6,7 +6,7 @@
 
 namespace nutsloop {
 
-bool log::logs_disabled_ = false;
+std::atomic<bool> log::logs_disabled_{ false };
 std::unique_ptr<log::stream_redirect_> log::stream_redirect_pointer_ = nullptr;
 std::unique_ptr<std::unordered_map<std::string, std::tuple<bool, std::ofstream>>> log::log_files_ = nullptr;
 std::shared_mutex log::log_mtx_;
@@ -14,10 +14,10 @@ log::null_logger_ log::null_log_;
 
 void log::setup( const std::string& ident, const std::string& filename, const bool enabled /*=true*/ ) {
 
-  if ( logs_disabled_ )
+  if ( disabled_logs() )
     return;
 
-  {
+  { // MARK (LOG) MUTEX LOCK
     std::unique_lock lock( log_mtx_ );
 
     // Initialize the log files map if needed
@@ -25,7 +25,7 @@ void log::setup( const std::string& ident, const std::string& filename, const bo
       log_files_ = std::make_unique<std::unordered_map<std::string, std::tuple<bool, std::ofstream>>>();
     }
 
-    log_files_->emplace( ident, std::make_tuple( enabled, std::ofstream() ) );
+    insert_( ident, enabled );
     auto& [ enabled_file, log_file ] = log_files_->at( ident );
 
     if ( !enabled_file ) {
@@ -77,40 +77,12 @@ void log::setup( const std::string& ident, const std::string& filename, const bo
   }
 }
 
-void log::cleanup() {
-
-  if ( logs_disabled_ )
-    return;
-
-  {
-    std::unique_lock lock( log_mtx_ );
-
-    std::cerr << "log::cleanup() called\n";
-
-    if ( log_files_ ) {
-      for ( auto& [ ident, log_file_opt ] : *log_files_ ) {
-        std::cerr << "Cleaning log: " << ident << "\n";
-        if ( auto& [ enabled_file, log_file ] = log_file_opt; enabled_file && log_file.is_open() ) {
-          log_file.close();
-        }
-      }
-      log_files_.reset();
-    }
-    else {
-      std::cerr << "log_files_ is null\n";
-    }
-
-    stream_redirect_pointer_.reset();
-    // std::cerr << "log::cleanup() finished\n";
-  }
-}
-
 std::ostream& log::stream( const char* ident, const char* file, const int line, const char level /*= 'I'*/ ) {
 
-  if ( logs_disabled_ )
+  if ( disabled_logs() )
     return null_log_;
 
-  {
+  { // MARK (LOG) MUTEX LOCK
     std::shared_lock lock( log_mtx_ );
 
     // Check if the identifier exists in log_files_
@@ -153,6 +125,48 @@ std::ostream& log::stream( const char* ident, const char* file, const int line, 
     return stream;
   }
 }
+
+void log::cleanup() {
+
+  if ( disabled_logs() )
+    return;
+
+  { // MARK (LOG) MUTEX LOCK
+    std::unique_lock lock( log_mtx_ );
+
+    std::cerr << "log::cleanup() called\n";
+
+    if ( log_files_ ) {
+      for ( auto& [ ident, log_file_opt ] : *log_files_ ) {
+        std::cerr << "Cleaning log: " << ident << "\n";
+        if ( auto& [ enabled_file, log_file ] = log_file_opt; enabled_file && log_file.is_open() ) {
+          log_file.close();
+        }
+      }
+      log_files_.reset();
+    }
+    else {
+      std::cerr << "log_files_ is null\n";
+    }
+
+    stream_redirect_pointer_.reset();
+    // std::cerr << "log::cleanup() finished\n";
+  }
+}
+
+void log::set_logs( const bool disable ) { logs_disabled_.store( disable ); }
+
+bool log::disabled_logs() { return logs_disabled_.load(); }
+
+void log::insert_( const std::string& ident, bool enabled ) {
+
+  if ( const auto it = log_files_->find( ident ); it != log_files_->end() ) {
+    it->second = std::make_tuple( enabled, std::ofstream() ); // Update value.
+  } else {
+    log_files_->emplace( ident , std::make_tuple( enabled, std::ofstream() ) ); // Insert a new log.
+  }
+}
+
 
 std::string log::shortened_path_( const std::filesystem::path& dir ) {
   std::vector<std::string> components;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <filesystem>
 #include <shared_mutex>
 #include <unordered_map>
@@ -74,11 +75,35 @@ public:
    * @param disable A boolean flag indicating whether to disable logging.
    *                Pass `true` to disable logging, and `false` to enable it.
    */
-  static void set_logs( const bool disable ) { logs_disabled_ = disable; }
+  static void set_logs( bool disable );
+
+  /**
+   * Checks whether logging is globally disabled in the current context.
+   *
+   * This function provides a thread-safe mechanism to determine the
+   * global logging status by querying the internal atomic flag. If logging
+   * is disabled, log messages are suppressed across the application.
+   *
+   * @return True if logging is globally disabled, false otherwise.
+   *
+   * @note The status is determined through an atomic operation to ensure
+   *       thread safety in multithreaded environments.
+   */
+  static bool disabled_logs();
 private:
 
   static std::shared_mutex log_mtx_;
-  static bool logs_disabled_;
+  static std::atomic<bool> logs_disabled_;
+
+  /**
+   * Inserts or updates a log entry for the specified identifier in the logging system.
+   * If the identifier already exists, its associated logging properties are updated.
+   * Otherwise, a new log entry is created with the specified logging state.
+   *
+   * @param ident A unique identifier for the log entry to be added or updated.
+   * @param enabled Flag to indicate whether logging is enabled for the given identifier.
+   */
+  static void insert_( const std::string& ident, bool enabled );
 
   /**
    * Generates a shortened version of the provided file system path.
@@ -86,7 +111,7 @@ private:
    * which may be useful for log messages, user interfaces, or other scenarios
    * where a full path might be too verbose.
    *
-   * The method preserves critical components of the path while abbreviating
+   * The method preserves critical parts of the path while abbreviating
    * less significant segments. The specific logic for shortening depends on
    * implemented rules and heuristics.
    *
@@ -214,7 +239,7 @@ private:
    * A specialized logger class derived from `std::ostream` that performs no-op operations
    * for all output streams redirected to it.
    *
-   * This class is intended for use cases where logging functionality must exist,
+   * This class is intended for use in cases where logging functionality must exist,
    * but actual output is not required. It effectively discards any input given to it.
    *
    * The `null_logger_` leverages an internal `null_buffer_` that implements a stream buffer
@@ -245,7 +270,7 @@ private:
     null_buffer_ null_buffer_;
   };
   /**
-   * A static global member of type `null_logger_` that serves as a no-op logger.
+   * A static global member of `null_logger_` type that serves as a no-op logger.
    *
    * This member is designed to silently discard any log messages sent to it. It is useful
    * in scenarios where logging needs to be disabled or when a placeholder logger is required.
@@ -254,7 +279,7 @@ private:
    * for formatting or storing log entries. This makes it an efficient logging sink
    * for situations where logging is unnecessary.
    *
-   * @note Intended for use when a logger is required for compatibility reasons
+   * @note Intended for use when a logger is required for compatibility reasons,
    *       but actual logging is not desired.
    */
   static null_logger_ null_log_;
