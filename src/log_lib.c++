@@ -12,7 +12,7 @@ std::unique_ptr<std::unordered_map<std::string, std::tuple<bool, std::ofstream>>
 std::shared_mutex log::log_mtx_;
 log::null_logger_ log::null_log_;
 
-void log::setup( const std::string& ident, const std::string& filename, const bool enabled /*=true*/ ) {
+void log::setup( const std::string& ident, const std::string& filename, const bool is_enabled /*=true*/ ) {
 
   if ( disabled_logs() )
     return;
@@ -25,10 +25,15 @@ void log::setup( const std::string& ident, const std::string& filename, const bo
       log_files_ = std::make_unique<std::unordered_map<std::string, std::tuple<bool, std::ofstream>>>();
     }
 
-    insert_( ident, enabled );
-    auto& [ enabled_file, log_file ] = log_files_->at( ident );
+    const bool updated = insert_( ident, is_enabled );
+    auto& [ enabled, log_file ] = log_files_->at( ident );
 
-    if ( !enabled_file ) {
+    if ( !enabled && log_file.is_open() && updated ) {
+      log_file.close();
+      return;
+    }
+
+    if ( updated && log_file.is_open() ) {
       return;
     }
 
@@ -73,7 +78,8 @@ void log::setup( const std::string& ident, const std::string& filename, const bo
     }
 
     log_file << std::unitbuf; // Ensure immediate flushing
-    log_file << generate_new_session_header_( filename ); // Add session header
+    if (!updated)
+      log_file << generate_new_session_header_( filename ); // Add session header
   }
 }
 
@@ -139,7 +145,7 @@ void log::cleanup() {
     if ( log_files_ ) {
       for ( auto& [ ident, log_file_opt ] : *log_files_ ) {
         std::cerr << "Cleaning log: " << ident << "\n";
-        if ( auto& [ enabled_file, log_file ] = log_file_opt; enabled_file && log_file.is_open() ) {
+        if ( auto& [ enabled, log_file ] = log_file_opt; enabled && log_file.is_open() ) {
           log_file.close();
         }
       }
@@ -158,13 +164,24 @@ void log::set_logs( const bool disable ) { logs_disabled_.store( disable ); }
 
 bool log::disabled_logs() { return logs_disabled_.load(); }
 
-void log::insert_( const std::string& ident, bool enabled ) {
+bool log::insert_( const std::string& ident, bool is_enabled ) {
 
   if ( const auto it = log_files_->find( ident ); it != log_files_->end() ) {
-    it->second = std::make_tuple( enabled, std::ofstream() ); // Update value.
-  } else {
-    log_files_->emplace( ident , std::make_tuple( enabled, std::ofstream() ) ); // Insert a new log.
+
+    const bool previous_enabled = std::get<0>( it->second );
+    if ( previous_enabled == is_enabled ) {
+      std::cerr << "[WARN] Log identifier '" << ident << "' already exists, but is already in the desired state." << std::endl;
+      return true;
+    }
+    std::cerr << "[WARN] Log identifier '" << ident << "' already exists, updating log file status..." << '\n'
+      << "       was ( " << ( previous_enabled ? "enabled" : "disabled" ) << ")"
+      << " -> now ( " << ( is_enabled ? "enabled" : "disabled" ) << " )" << std::endl;
+    it->second = std::make_tuple( is_enabled, std::ofstream() ); // Update value.
+    return true;
+
   }
+  log_files_->emplace( ident , std::make_tuple( is_enabled, std::ofstream() ) ); // Insert a new log.
+  return false;
 }
 
 

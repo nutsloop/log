@@ -28,7 +28,7 @@ public:
    *
    * @param ident A unique identifier for the logger instance.
    * @param filename The name of the log file where logs will be written.
-   * @param enabled Flag to indicate whether logging is enabled. Defaults to true.
+   * @param is_enabled Flag to indicate whether logging is enabled. Defaults to true.
    *
    * @note This function is thread-safe and uses a locking mechanism
    *       to prevent multiple threads from interfering with resource setup.
@@ -36,7 +36,7 @@ public:
    *       These streams will automatically flush after each output.
    * @throws An error message is logged if the specified log file cannot be opened.
    */
-  static void setup( const std::string& ident, const std::string& filename, bool enabled = true );
+  static void setup( const std::string& ident, const std::string& filename, bool is_enabled = true );
 
   /**
    * Provides a logging stream associated with a specific identifier.
@@ -96,14 +96,24 @@ private:
   static std::atomic<bool> logs_disabled_;
 
   /**
-   * Inserts or updates a log entry for the specified identifier in the logging system.
-   * If the identifier already exists, its associated logging properties are updated.
-   * Otherwise, a new log entry is created with the specified logging state.
+   * Inserts or updates a log identifier in the internal log registry.
+   * If the provided log identifier already exists, the function checks if its
+   * enabled state matches the current request. If there is no change, a warning is issued,
+   * and the function returns without further modification. If the state needs updating,
+   * it modifies and reflects the new state in the registry.
    *
-   * @param ident A unique identifier for the log entry to be added or updated.
-   * @param enabled Flag to indicate whether logging is enabled for the given identifier.
+   * For new log identifiers, the function adds an entry to the registry with the
+   * specified enabled state.
+   *
+   * @param ident A unique identifier for the log entry.
+   * @param is_enabled Specifies whether the log entry should be enabled or disabled.
+   *
+   * @return Returns true if the log identifier already exists (updated or left unchanged).
+   *         Returns false if the log identifier was newly added.
+   *
+   * @note This function issues a warning to `std::cerr` if updating an existing log entry.
    */
-  static void insert_( const std::string& ident, bool enabled );
+  [[nodiscard]] static bool insert_( const std::string& ident, bool is_enabled );
 
   /**
    * Generates a shortened version of the provided file system path.
