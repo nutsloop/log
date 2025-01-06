@@ -4,6 +4,7 @@
 // it is not meant to be compiled or run directly
 int main() {
 
+  log::setup( "main", "main.log", false );
   log::setup( "main", "main.log", true );
 
   log::stream( "main", __FILE__, __LINE__, 'I' ) << "Hello, world!\n";

@@ -1,4 +1,4 @@
-#include "log_lib.h++"
+#include "log.h++"
 
 #include <fstream>
 #include <iostream>
@@ -30,6 +30,11 @@ void log::setup( const std::string& ident, const std::string& filename, const bo
 
     if ( !enabled && log_file.is_open() && updated ) {
       log_file.close();
+      return;
+    }
+
+    if (!enabled && !log_file.is_open() && !updated) {
+      std::cerr << "Warning: Log file stream is not open for identifier '" << ident << "'.\n";
       return;
     }
 
