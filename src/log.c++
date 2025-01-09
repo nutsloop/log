@@ -205,6 +205,14 @@ void log::set( const log_settings_t& settings ) {
 
 std::ostream& log::stream( const char* ident, const char* file, const int line, const char level /*= 'I'*/ ) {
 
+  if ( DEBUG ) {
+    { // MARK (LOG) MUTEX LOCK
+      std::shared_lock lock( mtx_ );
+      debug_file_is_active_();
+      debug_stream_( __FILE__, __LINE__, 'I' ) << "log::stream() called ⇣" << std::endl;
+    }
+  }
+
   if ( !is_activated_() ) return null_log_;
 
   { // MARK (LOG) MUTEX LOCK
