@@ -67,7 +67,6 @@ void log::deactivate() {
           << " => now[ " << std::boolalpha << activated_ << " ] )" << std::endl; // actual
       }
     }
-
 }
 
 void log::set( const log_settings_t& settings ) {
@@ -86,7 +85,8 @@ void log::set( const log_settings_t& settings ) {
             << std::format( "  log with ident -> [ {} ]", log_ident->settings.ident ) << '\n'
             << std::format( "    is_active -> [ {} ]", log_ident->settings.active ? "true" : "false" ) << '\n'
             << std::format( "    is_running -> [ {} ]", log_ident->running ? "true" : "false" ) << '\n'
-            << std::format( "  use: `log::start( '{}' )` | `log::stop( '{}' )`", settings.ident, settings.ident ) << '\n'
+            << std::format( "  use: `log::start( '{}' )` | `log::stop( '{}' )`", settings.ident, settings.ident )
+            << '\n'
             << std::format( "  to change the running state for log with ident -> `{}`.", settings.ident ) << std::endl;
         }
       }
@@ -104,22 +104,22 @@ void log::set( const log_settings_t& settings ) {
       std::shared_lock<std::shared_mutex> lock( mtx_ );
       debug_file_is_active_();
 
-      debug_stream_( __FILE__, __LINE__, 'I' ) << "log::set() called ⇣" << '\n'
+      debug_stream_( __FILE__, __LINE__, 'I' )
+        << "log::set() called ⇣" << '\n'
         << "  set_has_been_called_ ("
         << " was -> [ " << std::boolalpha << previous_set_status << " ]" // previous
-        << " => now[ "<< std::boolalpha << set_has_been_called_ << " ] )" << std::endl; // actual
+        << " => now[ " << std::boolalpha << set_has_been_called_ << " ] )" << std::endl; // actual
     }
   }
 
-  if ( ! is_activated_() ) {
-
+  if ( !is_activated_() ) {
 
     if ( DEBUG ) {
       {
         std::shared_lock<std::shared_mutex> lock( mtx_ );
         debug_stream_( __FILE__, __LINE__, 'W' ) << "log::set called ⇣" << '\n'
-          << "  log system is not active. " << '\n'
-          << "  use `log::activate()` to activate the log system." << std::endl;
+                                                 << "  log system is not active. " << '\n'
+                                                 << "  use `log::activate()` to activate the log system." << std::endl;
       }
     }
     return;
@@ -132,9 +132,10 @@ void log::set( const log_settings_t& settings ) {
     if ( DEBUG ) {
       {
         std::shared_lock lock( mtx_ );
-        log_address = reinterpret_cast<uintptr_t>(&log_);
-        debug_stream_( __FILE__, __LINE__, 'I' ) << "log_ is nullptr, construct..." << '\n'
-          << std::format("pointer with address -> 0x{:x}", log_address) << std::endl;
+        log_address = reinterpret_cast<uintptr_t>( &log_ );
+        debug_stream_( __FILE__, __LINE__, 'I' )
+          << "log_ is nullptr, construct..." << '\n'
+          << std::format( "pointer with address -> 0x{:x}", log_address ) << std::endl;
       }
     }
   }
@@ -149,18 +150,20 @@ void log::set( const log_settings_t& settings ) {
   if ( DEBUG ) {
     {
       std::shared_lock lock( mtx_ );
-      debug_stream_( __FILE__, __LINE__, 'I' ) << "log_ is being destroyed..." << '\n'
-        << std::format("pointer with address -> 0x{:x}", log_address) << std::endl;
+      debug_stream_( __FILE__, __LINE__, 'I' )
+        << "log_ is being destroyed..." << '\n'
+        << std::format( "pointer with address -> 0x{:x}", log_address ) << std::endl;
     }
   }
 
   log_t* log_ident = &log_registry_->at( settings.ident );
 
-  if ( ! log_ident->settings.directory ) {
+  if ( !log_ident->settings.directory ) {
     if ( DEBUG ) {
       {
         std::shared_lock lock( mtx_ );
-        debug_stream_( __FILE__, __LINE__, 'I' ) << "log custom directory is not set. " << '\n'
+        debug_stream_( __FILE__, __LINE__, 'I' )
+          << "log custom directory is not set. " << '\n'
           << "  using default directory: " << nutsloop_logs_directory << '\n'
           << "  use `log::set( ident, settings )` to set a custom directory." << std::endl;
       }
@@ -198,9 +201,36 @@ void log::set( const log_settings_t& settings ) {
   // Add the default session header if the custom one has not been set.
   if ( !log_ident->settings.session_header ) {
     log_ident->stream << generate_new_session_header_( log_ident->settings.ident,
-                                                         log_file_path ); // Add session header
+                                                       log_file_path ); // Add session header
+  }
+}
+
+bool log::full_running( std::string ident){
+  if ( DEBUG ) {
+    { // MARK (LOG) MUTEX LOCK
+      std::shared_lock lock( mtx_ );
+      debug_file_is_active_();
+      debug_stream_( __FILE__, __LINE__, 'I' )
+        << std::format( "log::stream(ident[{}]) called ⇣", ident) << std::endl;
+    }
   }
 
+  if ( !is_activated_() ) return false;
+
+  if (log_registry_->contains( ident ) ) {
+    const log_t* log_ident = &log_registry_->at( ident );
+    if ( log_ident->running && log_ident->stream.is_open() ) {
+      return true;
+    }
+    if ( log_ident->running && !log_ident->stream.is_open() ) {
+      return false;
+    }
+    if ( !log_ident->running && !log_ident->stream.is_open() ) {
+      return false;
+    }
+  }
+
+  return false;
 }
 
 std::ostream& log::stream( const char* ident, const char* file, const int line, const char level /*= 'I'*/ ) {

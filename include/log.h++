@@ -78,6 +78,7 @@ public:
   static void set( const log_settings_t& settings );
 
   // not implemented yet
+  static bool full_running( std::string ident );
   static void start( std::string ident ) = delete;
   static void stop( std::string ident ) = delete;
   static void close( std::string ident ) = delete;
