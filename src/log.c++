@@ -22,6 +22,7 @@ std::unique_ptr<log_registry_t> log::log_registry_{ nullptr };
 std::unique_ptr<log_t> log::log_{ nullptr };
 
 std::unique_ptr<log::stream_redirect_> log::stream_redirect_pointer_ = nullptr;
+std::atomic<bool> log::stream_redirect_active_{ false };
 log::null_logger_ log::null_log_;
 
 void log::activate() {
@@ -193,9 +194,11 @@ void log::set( const log_settings_t& settings ) {
     throw std::runtime_error( *log_file_stream_error );
   }
 
-  // Setup stream redirection only once
-  if ( !stream_redirect_pointer_ ) {
-    stream_redirect_pointer_ = std::make_unique<stream_redirect_>( std::cout, std::cerr, log_ident->stream.rdbuf() );
+  if ( is_stream_redirect_active_() ) {
+    // Setup stream redirection only once
+    if ( !stream_redirect_pointer_ ) {
+      stream_redirect_pointer_ = std::make_unique<stream_redirect_>( std::cout, std::cerr, log_ident->stream.rdbuf() );
+    }
   }
 
   log_ident->stream << std::unitbuf;
@@ -478,7 +481,7 @@ std::optional<std::string> log::error_on_log_file_( const log_t* log_ident ) {
   return std::nullopt;
 }
 
-void log::mkdir_default_( const std::filesystem::path& path){
+void log::mkdir_default_( const std::filesystem::path& path ){
   try {
     if ( !std::filesystem::exists( path ) ) {
       std::filesystem::create_directory( path );
@@ -569,15 +572,66 @@ std::string log::datetime_() {
   return time_now;
 }
 
+bool log::is_stream_redirect_active_() {
+
+  if ( DEBUG ) {
+    debug_stream_( __FILE__, __LINE__, 'I' ) << "log::is_stream_redirect_active() called ⇣" << '\n'
+      << "  stream_redirect_active_: [ " << std::boolalpha << stream_redirect_active_ << " ] " << std::endl; // actual
+  }
+  return stream_redirect_active_.load();
+}
+
+void log::activate_stream_redirect() {
+
+  const bool previous_stream_redirect_active = stream_redirect_active_.exchange( true );
+  if ( DEBUG ) {
+    {
+      // MARK (LOG) MUTEX LOCK
+      std::shared_lock lock{ mtx_ };
+      debug_file_is_active_();
+      debug_stream_( __FILE__, __LINE__, 'I' ) << "log::activate_stream_redirect() called ⇣" << '\n'
+        << "  activated_ ( "
+        << " was -> [ " << std::boolalpha << previous_stream_redirect_active << " ]" // previous
+        << " => now[ " << std::boolalpha << stream_redirect_active_ << " ] )" << std::endl; // actual
+    }
+  }
+}
+
 log::stream_redirect_::stream_redirect_(std::ostream& stream_out, std::ostream& stream_err, std::streambuf* log_file_buffer) :
       original_cout_(stream_out.rdbuf()),
       original_cerr_(stream_err.rdbuf()) {
 
-  stream_out.rdbuf(log_file_buffer);
-  stream_err.rdbuf(log_file_buffer);
+  this->cout_file_.open( nutsloop::nutsloop_logs_directory / "nutsloop_cout.log", std::ios::out | std::ios::app );
+  this->cerr_file_.open( nutsloop::nutsloop_logs_directory / "nutsloop_cerr.log", std::ios::out | std::ios::app );
+
+  if ( ! this->cout_file_.is_open() ) {
+    if ( DEBUG ) {
+      debug_stream_( __FILE__, __LINE__, 'E' )
+        << "log::stream_redirect_::stream_redirect_() failed to open cout<<log file '"
+        << nutsloop::nutsloop_logs_directory / "nutsloop_cout.log" << "'" << std::endl;
+    }
+    return;
+  }
+
+  if ( ! this->cerr_file_.is_open() ) {
+    if ( DEBUG ) {
+      debug_stream_( __FILE__, __LINE__, 'E' )
+        << "log::stream_redirect_::stream_redirect_() failed to open cerr<<log file '"
+        << nutsloop::nutsloop_logs_directory / "nutsloop_cerr.log" << "'" << std::endl;
+    }
+    return;
+  }
+
+  this->cout_file_ << std::unitbuf;
+  this->cerr_file_ << std::unitbuf;
+
+  stream_out.rdbuf( this->cout_file_.rdbuf() );
+  stream_err.rdbuf( this->cerr_file_.rdbuf() );
 }
 
 log::stream_redirect_::~stream_redirect_() {
+  this->cout_file_.close();
+  this->cerr_file_.close();
   std::cout.rdbuf( original_cout_ );
   std::cerr.rdbuf( original_cerr_ );
 }
