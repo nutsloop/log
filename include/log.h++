@@ -101,6 +101,19 @@ public:
    */
   static std::ostream& stream( const char* ident, const char* file, int line, char level = 'I' );
 
+  /**
+   * Activates the stream redirection within the logging system.
+   *
+   * This method enables the mechanism to redirect logging streams for capturing or handling
+   * log outputs differently. If the stream redirection is already active, its previous state
+   * is reported and updated. Debug information is logged when operating in DEBUG mode.
+   * The method ensures thread safety by using appropriate synchronization primitives.
+   *
+   * @note This functionality is critical when an alternate handling of log streams is required.
+   * Debug logs provide insights into the activation state changes.
+   */
+  static void activate_stream_redirect();
+
 private:
 
   // MARK: (LOG) private static log debug info file methods and fields
@@ -298,43 +311,58 @@ private:
   public:
 
     /**
-     * Redirects the output streams `stream_out` and `stream_err` to a new stream buffer.
-     * Saves the original stream buffers of `std::cout` and `std::cerr` for potential restoration.
+     * Constructs a stream redirector to reroute standard output and error streams to designated log files.
      *
-     * This constructor replaces the rdbuf of both provided output streams with the specified
-     * `log_file_buffer`, redirecting their output to the given stream buffer. It also preserves
-     * the original stream buffers for later use, such as restoring the streams to their
-     * previous state.
+     * The constructor initializes internal buffers and opens log files for both the `stdout` and `stderr` streams.
+     * If the log files fail to open, debug messages are generated in debug mode. Upon successful initialization,
+     * it redirects the provided streams to the corresponding log files, ensuring that subsequent output and error
+     * messages are stored in these files.
      *
-     * @param stream_out The output stream to redirect, typically `std::cout`.
-     * @param stream_err The error stream to redirect, typically `std::cerr`.
-     * @param log_file_buffer The new stream buffer to be assigned to both `stream_out` and `stream_err`.
+     * @param stream_out The output stream (e.g., `std::cout`) to be redirected.
+     * @param stream_err The error stream (e.g., `std::cerr`) to be redirected.
+     * @param log_file_buffer Unused internal stream buffer parameter associated with log file handling.
      *
-     * @note The new stream buffer will handle all output from both streams after the redirection.
-     *       Ensure that the `log_file_buffer` remains valid for the lifetime of the redirection.
+     * @return No return value, as this is a constructor.
      */
     stream_redirect_(std::ostream& stream_out, std::ostream& stream_err, std::streambuf* log_file_buffer);
 
     /**
-     * Destructor for the `stream_redirect_` class.
+     * Destructor for the stream_redirect_ class, responsible for cleaning up and restoring
+     * the redirection of standard output and error streams.
      *
-     * Restores the original stream buffers for `std::cout` and `std::cerr`,
-     * reverting any prior redirection performed by the `stream_redirect_` instance.
-     * This ensures that the standard output and error streams resume their
-     * original behavior after the lifetime of the `stream_redirect_` object ends.
+     * This method closes any open files used for redirection and restores the original
+     * stream buffers for both std::cout and std::cerr. Ensures proper resource management
+     * and reverts the output streams to their original state upon object destruction.
      *
-     * @note This function is called automatically when the `stream_redirect_` object
-     *       goes out of scope.
-     * @note It is essential that the saved original stream buffers are valid
-     *       at the time of restoration.
+     * It is implicitly invoked when an instance of stream_redirect_ goes out of scope or
+     * is explicitly deleted.
+     *
+     * @note Proper cleanup of redirected streams is essential to prevent unexpected
+     * behavior or resource leaks. This method is thread-safe for sequential use,
+     * but the caller must ensure safe usage in a multithreaded context.
      */
     ~stream_redirect_();
 
   private:
     std::streambuf* original_cout_;
     std::streambuf* original_cerr_;
+    std::ofstream cout_file_;
+    std::ofstream cerr_file_;
+
   };
   static std::unique_ptr<stream_redirect_> stream_redirect_pointer_;
+  /**
+   * Checks whether the stream redirection is currently active.
+   *
+   * This method verifies the status of stream redirection and determines
+   * if it is enabled. If debugging is enabled, it logs the status
+   * to the internal debug stream for diagnostic purposes.
+   * The status is tracked using an atomic variable for thread safety.
+   *
+   * @return True if stream redirection is active, false otherwise.
+   */
+  static bool is_stream_redirect_active_();
+  static std::atomic<bool> stream_redirect_active_;
 
   /**
    * A specialized custom stream buffer that discards all inserted data.
