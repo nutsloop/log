@@ -173,6 +173,8 @@ void log::set( const log_settings_t& settings ) {
     mkdir_default_( nutsloop_dir );
     mkdir_default_( nutsloop_logs_directory );
   }
+  // TODO: handle custom log directory
+  else {}
 
   bool renamed = false;
   const std::filesystem::path log_file_path = nutsloop_logs_directory / log_ident->settings.filename;
@@ -203,6 +205,8 @@ void log::set( const log_settings_t& settings ) {
     log_ident->stream << generate_new_session_header_( log_ident->settings.ident,
                                                        log_file_path ); // Add session header
   }
+  // TODO: handle custom log header
+  else {}
 }
 
 bool log::full_running( std::string ident){
