@@ -28,8 +28,11 @@ int main() {
   };
 
   log::activate();
+  log::activate_stream_redirect();
   log::set( llog_settings );
 
+  std::cout << "std::cout >> Hello World!" << '\n';
+  std::cerr << "std::cerr >> Hello World!" << '\n';
 
   LOG << "Hello World!" << '\n';
 
