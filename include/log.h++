@@ -86,20 +86,27 @@ public:
   static void remove( std::string ident ) = delete;
 
   /**
-   * Prepares and returns a stream for logging with specified details.
+   * Provides an output stream to log messages for a specified identifier with metadata.
    *
-   * This method retrieves and validates a logging context based on the given identifier,
-   * associates the provided file and line information, and prefixes the log entry with
-   * the specified logging level. If logging is disabled, not running, or fails to initialize
-   * correctly for the identifier, a null stream is returned.
+   * This method retrieves a logging stream associated with the given identifier. The metadata
+   * such as file name, line number, and log level are also added as a log entry prefix.
+   * It performs multiple checks to ensure the log is active, running, and properly configured.
+   * If any of these checks fail, a null stream is returned. Otherwise, a valid stream
+   * for the specified identifier is provided for logging.
    *
-   * @param ident The unique identifier for the logging context to be used.
-   * @param file The name or path of the source file where the log is generated.
-   * @param line The line number in the source file where the log is generated.
-   * @param level The severity level of the log message. Defaults to 'I' (Informational).
-   * @return A reference to the logging output stream for writing log entries.
+   * Thread-safe locking mechanisms are used to ensure consistent log behavior during
+   * concurrent operations. Logs debugging details when debug mode is enabled.
+   *
+   * @param ident The unique identifier of the log to use.
+   * @param file The name of the source file where the log is recorded.
+   * @param line The line number in the source file where the log is recorded.
+   * @param level The log level (e.g., INFO, DEBUG, ERROR, NONE) for the log entry.
+   *              Defaults to INFO if not specified.
+   * @return A reference to the logging output stream if successful, or a null stream
+   * if conditions do not permit logging.
    */
-  static std::ostream& stream( const char* ident, const char* file, int line, char level = 'I' );
+  static std::ostream& stream( const char* ident, const char* file, int line, Level level = INFO );
+  static std::ostream& stream( const char* ident );
 
   /**
    * Activates the stream redirection within the logging system.
@@ -159,17 +166,19 @@ private:
    */
   static void debug_tmp_file_create_();
   /**
-   * Provides an internal debug stream for logging, containing detailed contextual information.
+   * Provides an output stream for logging debug information.
    *
-   * This method generates a debug stream entry with a specified severity level, source file, and line number.
-   * It is used internally within the logging system for diagnostic or debugging purposes.
+   * This method formats and returns a reference to the debug stream configured
+   * with details such as the logging level, the source file, and the line number.
+   * It dynamically outputs the log message header to an internal debug file stream
+   * and prepares it for additional content.
    *
-   * @param file The name or path of the source file where the debug entry is generated.
-   * @param line_number The line number in the source file where the debug entry is generated.
-   * @param level The severity level for the debug message.
-   * @return A reference to the debug output stream for writing debug log entries.
+   * @param file The name of the source file where the log entry originates.
+   * @param line_number The line number in the source file associated with the log entry.
+   * @param level The logging level indicating the severity or category of the log entry.
+   * @return A reference to the debug output stream prepared for logging.
    */
-  static std::ofstream& debug_stream_( const char* file, int line_number = 0, char level = 'I' );
+  static std::ofstream& debug_stream_( const char* file, int line_number = 0, Level level = INFO );
 
   // MARK: (LOG) private static methods and fields
   static std::shared_mutex mtx_;
