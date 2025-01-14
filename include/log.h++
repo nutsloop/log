@@ -28,6 +28,13 @@ struct log_t {
   bool running;
 };
 
+enum Level {
+  INFO,
+  WARN,
+  ERROR,
+  NONE
+};
+
 using log_registry_t = std::unordered_map<std::string, log_t>;
 
 class log {
@@ -233,19 +240,27 @@ private:
    */
   static void mkdir_default_( const std::filesystem::path& path );
 
+  static std::optional<log_t*> null_stream_( const std::string& ident );
+
   /**
-   * Converts a log level character to its corresponding descriptive string.
+   * Maps the logging level to its corresponding string representation.
    *
-   * This method translates a single-character log level identifier (e.g., 'I', 'E', 'W')
-   * into a human-readable string representation of the log level (e.g., "INFO", "ERROR", "WARN").
+   * This method transforms a given logging level enum into its respective
+   * string identifier for consistent use in logging outputs. Depending on the input,
+   * it returns the appropriate string corresponding to the specific logging level.
    *
-   * - If the provided log level character is not recognized, the method may return a default
-   *   or error string, depending on implementation.
+   * The available mappings are as follows:
+   * - INFO: "INFO"
+   * - WARN: "WARN"
+   * - ERROR: "ERROR"
+   * - NONE: an empty string
    *
-   * @param level The single-character log level identifier to be converted.
-   * @return A constant character pointer to the descriptive string representing the log level.
+   * @param level The logging level to be converted.
+   * @return A constant character pointer to the string representation of the provided level.
+   *
+   * @note This function assumes valid enum values but provides a fallback for unknown inputs.
    */
-  static const char* level_( char level );
+  static const char* level_( Level level );
 
   /**
    * Generates a shortened version of the provided file system path.
