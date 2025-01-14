@@ -20,7 +20,7 @@ void signal_handler(int signal) {
 // it is not meant to be compiled or run directly
 int main() {
 
-  #define LOG nutsloop::log::stream( "log", __FILE__, __LINE__, 'I' )
+  #define LOG nutsloop::log::stream( "log", __FILE__, __LINE__, nutsloop::Level::INFO )
   const nutsloop::log_settings_t llog_settings{
     .ident = "log",
     .filename = "log.log",
@@ -35,6 +35,9 @@ int main() {
   std::cerr << "std::cerr >> Hello World!" << '\n';
 
   LOG << "Hello World!" << '\n';
+
+  log::stream( "log" ) << "Hello World!" << '\n';
+  log::stream("log", "", *"", nutsloop::Level::NONE) << "Hello World!" << '\n';
 
   // Register the signal handler for CTRL-C
   std::signal(SIGINT, signal_handler);
