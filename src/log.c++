@@ -33,7 +33,7 @@ void log::activate() {
         // MARK (LOG) MUTEX LOCK
         std::shared_lock lock{ mtx_ };
         debug_file_is_active_();
-        debug_stream_( __FILE__, __LINE__, 'I' ) << "log::activate() called ⇣" << '\n'
+        debug_stream_( __FILE__, __LINE__, INFO ) << "log::activate() called ⇣" << '\n'
           << "  activated_ ( "
           << " was -> [ " << std::boolalpha << previous_activate_status << " ]" // previous
           << " => now[ " << std::boolalpha << activated_ << " ] )" << std::endl; // actual
@@ -48,7 +48,7 @@ void log::activate() {
       {
         std::shared_lock lock{ mtx_ };
         const auto log_registry_address = reinterpret_cast<uintptr_t>(&log_registry_);
-        debug_stream_( __FILE__, __LINE__, 'I' ) << "log_registry_ is nullptr, creating..." << '\n'
+        debug_stream_( __FILE__, __LINE__, INFO ) << "log_registry_ is nullptr, creating..." << '\n'
           << std::format("pointer with address -> 0x{:x}", log_registry_address) << std::endl;
       }
     }
@@ -62,7 +62,7 @@ void log::deactivate() {
       { // MARK (LOG) MUTEX LOCK
         std::unique_lock lock( mtx_ );
         debug_file_is_active_();
-        debug_stream_( __FILE__, __LINE__, 'I' ) << "log::deactivate() called ⇣" << '\n'
+        debug_stream_( __FILE__, __LINE__, INFO ) << "log::deactivate() called ⇣" << '\n'
           << "  activated_ ("
           << " was -> [ " << std::boolalpha << previous_activate_status << " ]" // previous
           << " => now[ " << std::boolalpha << activated_ << " ] )" << std::endl; // actual
@@ -80,7 +80,7 @@ void log::set( const log_settings_t& settings ) {
         log_t* log_ident = &log_registry_->at( settings.ident );
         if ( debug_tmp_file_stream_->is_open() ) {
 
-          debug_stream_( __FILE__, __LINE__, 'W' )
+          debug_stream_( __FILE__, __LINE__, WARN )
             << "log::set() called ⇣" << '\n'
             << std::format( "  log_registry_ has -> [ {} ]", log_ident->settings.ident ) << '\n'
             << std::format( "  log with ident -> [ {} ]", log_ident->settings.ident ) << '\n'
@@ -105,7 +105,7 @@ void log::set( const log_settings_t& settings ) {
       std::shared_lock<std::shared_mutex> lock( mtx_ );
       debug_file_is_active_();
 
-      debug_stream_( __FILE__, __LINE__, 'I' )
+      debug_stream_( __FILE__, __LINE__, INFO )
         << "log::set() called ⇣" << '\n'
         << "  set_has_been_called_ ("
         << " was -> [ " << std::boolalpha << previous_set_status << " ]" // previous
@@ -118,7 +118,7 @@ void log::set( const log_settings_t& settings ) {
     if ( DEBUG ) {
       {
         std::shared_lock<std::shared_mutex> lock( mtx_ );
-        debug_stream_( __FILE__, __LINE__, 'W' ) << "log::set called ⇣" << '\n'
+        debug_stream_( __FILE__, __LINE__, WARN ) << "log::set called ⇣" << '\n'
                                                  << "  log system is not active. " << '\n'
                                                  << "  use `log::activate()` to activate the log system." << std::endl;
       }
@@ -134,7 +134,7 @@ void log::set( const log_settings_t& settings ) {
       {
         std::shared_lock lock( mtx_ );
         log_address = reinterpret_cast<uintptr_t>( &log_ );
-        debug_stream_( __FILE__, __LINE__, 'I' )
+        debug_stream_( __FILE__, __LINE__, INFO )
           << "log_ is nullptr, construct..." << '\n'
           << std::format( "pointer with address -> 0x{:x}", log_address ) << std::endl;
       }
@@ -151,7 +151,7 @@ void log::set( const log_settings_t& settings ) {
   if ( DEBUG ) {
     {
       std::shared_lock lock( mtx_ );
-      debug_stream_( __FILE__, __LINE__, 'I' )
+      debug_stream_( __FILE__, __LINE__, INFO )
         << "log_ is being destroyed..." << '\n'
         << std::format( "pointer with address -> 0x{:x}", log_address ) << std::endl;
     }
@@ -163,7 +163,7 @@ void log::set( const log_settings_t& settings ) {
     if ( DEBUG ) {
       {
         std::shared_lock lock( mtx_ );
-        debug_stream_( __FILE__, __LINE__, 'I' )
+        debug_stream_( __FILE__, __LINE__, INFO )
           << "log custom directory is not set. " << '\n'
           << "  using default directory: " << nutsloop_logs_directory << '\n'
           << "  use `log::set( ident, settings )` to set a custom directory." << std::endl;
@@ -217,7 +217,7 @@ bool log::full_running( std::string ident){
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
       debug_file_is_active_();
-      debug_stream_( __FILE__, __LINE__, 'I' )
+      debug_stream_( __FILE__, __LINE__, INFO )
         << std::format( "log::stream(ident[{}]) called ⇣", ident) << std::endl;
     }
   }
@@ -437,7 +437,7 @@ void log::debug_tmp_file_create_() {
   std::cerr << "temporary debug file created: " << *tmp_debug_file_path_.load() << '\n';
 }
 
-std::ofstream& log::debug_stream_( const char* file, const int line_number, const char level ) {
+std::ofstream& log::debug_stream_( const char* file, const int line_number, const Level level ) {
 
   return dynamic_cast<std::ofstream&>( *debug_tmp_file_stream_ << "[" << level_( level ) << "] "
                                                                << "[" << shortened_path_( file ) << ':'
@@ -447,7 +447,7 @@ std::ofstream& log::debug_stream_( const char* file, const int line_number, cons
 bool log::is_activated_() {
 
   if ( DEBUG ) {
-    debug_stream_( __FILE__, __LINE__, 'I' ) << "log::is_activated_() called ⇣" << '\n'
+    debug_stream_( __FILE__, __LINE__, INFO ) << "log::is_activated_() called ⇣" << '\n'
       << "  log system is active: [ " << std::boolalpha << activated_.load() << " ] " << std::endl; // actual
   }
 
@@ -457,7 +457,7 @@ bool log::is_activated_() {
 bool log::is_set_called_() {
 
   if ( DEBUG ) {
-    debug_stream_( __FILE__, __LINE__, 'I' ) << "log::is_set_called_() called ⇣" << '\n'
+    debug_stream_( __FILE__, __LINE__, INFO ) << "log::is_set_called_() called ⇣" << '\n'
       << "  log has been set: [ " << std::boolalpha << set_has_been_called_ << " ] " << std::endl; // actual
   }
 
@@ -490,7 +490,7 @@ void log::mkdir_default_( const std::filesystem::path& path ){
 
         {
           std::shared_lock lock( mtx_ );
-          debug_stream_( __FILE__, __LINE__, 'W' )
+          debug_stream_( __FILE__, __LINE__, WARN )
             << "default directory '" << path << "' already exists." << std::endl;
         }
       }
@@ -504,15 +504,17 @@ void log::mkdir_default_( const std::filesystem::path& path ){
 const char* log::level_( const char level ) {
 
   switch ( level ) {
-  case 'I':
+  case INFO:
     return "INFO";
-  case 'W':
+  case WARN:
     return "WARN";
-  case 'E':
+  case ERROR:
     return "ERROR";
-  default:
-    return "UNKNOWN";
+  case NONE:
+    return "";
   }
+
+  return "UNKNOWN";
 }
 
 std::string log::shortened_path_( const std::filesystem::path& dir ) {
@@ -561,7 +563,7 @@ std::string log::datetime_() {
 
     if ( debug_tmp_file_stream_ != nullptr && debug_tmp_file_stream_->is_open() ) {
       *debug_tmp_file_stream_ << '\n' << "----------------------------------------------------------------------" << '\n';
-      debug_stream_( __FILE__, __LINE__, 'I' )
+      debug_stream_( __FILE__, __LINE__, INFO )
         << "datetime_() called ⇣" << '\n'
         << "now => [ " << time_now << " ]" << '\n'
         << "this is happening before new session header." << '\n'
@@ -575,7 +577,7 @@ std::string log::datetime_() {
 bool log::is_stream_redirect_active_() {
 
   if ( DEBUG ) {
-    debug_stream_( __FILE__, __LINE__, 'I' ) << "log::is_stream_redirect_active() called ⇣" << '\n'
+    debug_stream_( __FILE__, __LINE__, INFO ) << "log::is_stream_redirect_active() called ⇣" << '\n'
       << "  stream_redirect_active_: [ " << std::boolalpha << stream_redirect_active_ << " ] " << std::endl; // actual
   }
   return stream_redirect_active_.load();
@@ -589,7 +591,7 @@ void log::activate_stream_redirect() {
       // MARK (LOG) MUTEX LOCK
       std::shared_lock lock{ mtx_ };
       debug_file_is_active_();
-      debug_stream_( __FILE__, __LINE__, 'I' ) << "log::activate_stream_redirect() called ⇣" << '\n'
+      debug_stream_( __FILE__, __LINE__, INFO ) << "log::activate_stream_redirect() called ⇣" << '\n'
         << "  activated_ ( "
         << " was -> [ " << std::boolalpha << previous_stream_redirect_active << " ]" // previous
         << " => now[ " << std::boolalpha << stream_redirect_active_ << " ] )" << std::endl; // actual
@@ -606,7 +608,7 @@ log::stream_redirect_::stream_redirect_(std::ostream& stream_out, std::ostream& 
 
   if ( ! this->cout_file_.is_open() ) {
     if ( DEBUG ) {
-      debug_stream_( __FILE__, __LINE__, 'E' )
+      debug_stream_( __FILE__, __LINE__, ERROR )
         << "log::stream_redirect_::stream_redirect_() failed to open cout<<log file '"
         << nutsloop::nutsloop_logs_directory / "nutsloop_cout.log" << "'" << std::endl;
     }
@@ -615,7 +617,7 @@ log::stream_redirect_::stream_redirect_(std::ostream& stream_out, std::ostream& 
 
   if ( ! this->cerr_file_.is_open() ) {
     if ( DEBUG ) {
-      debug_stream_( __FILE__, __LINE__, 'E' )
+      debug_stream_( __FILE__, __LINE__, ERROR )
         << "log::stream_redirect_::stream_redirect_() failed to open cerr<<log file '"
         << nutsloop::nutsloop_logs_directory / "nutsloop_cerr.log" << "'" << std::endl;
     }
