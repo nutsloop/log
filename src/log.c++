@@ -240,64 +240,49 @@ bool log::full_running( std::string ident){
   return false;
 }
 
-std::ostream& log::stream( const char* ident, const char* file, const int line, const char level /*= 'I'*/ ) {
+std::ostream& log::stream( const char* ident, const char* file, const int line, const Level level /*= INFO*/ ) {
 
   if ( DEBUG ) {
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
       debug_file_is_active_();
-      debug_stream_( __FILE__, __LINE__, 'I' ) << "log::stream() called ⇣" << std::endl;
+      const std::string log_stream_signature = std::format("log::stream( ident[{}], file[{}], line[{}], level[{}] ) called ⇣", ident, file, line, level_( level ) );
+      debug_stream_( __FILE__, __LINE__, INFO ) << log_stream_signature << std::endl;
     }
   }
 
-  if ( !is_activated_() ) return null_log_;
+  const std::optional<log_t*> null_stream = null_stream_( ident );
+  log_t* log_ident = nullptr;
+  if ( null_stream ) log_ident = null_stream.value();
+  else return null_log_;
 
   { // MARK (LOG) MUTEX LOCK
     std::shared_lock lock( mtx_ );
 
-    // Check if the log_registry is nullptr
-    if (log_registry_ == nullptr) {
-      std::cerr << "[ERROR] log_registry_ is nullptr\n";
-      // IDEA: Consider throwing an exception or handling error specifically
-      return null_log_;
-    }
-
-    // Check if the identifier exists in log_registry_
-    if ( !log_registry_->contains( ident ) ) {
-      std::cerr << "[ERROR] Invalid log identifier '" << ident << "'.\n";
-      // IDEA: Consider throwing an exception or handling error specifically
-      return null_log_;
-    }
-
-    log_t* log_ident = &log_registry_->at( ident );
-
-    // Check if the log is active
-    if ( !log_ident->settings.active ) {
-      std::cerr << "[ERROR] Logging is disabled for identifier '" << ident << "'.\n";
-      // IDEA: Consider throwing an exception or handling error specifically
-      return null_log_;
-    }
-
-    // Check if the log is running
-    if ( !log_ident->running ) {
-      std::cerr << "[ERROR] Log is not running for identifier '" << ident << "'.\n";
-      // IDEA: Consider throwing an exception or handling error specifically
-      return null_log_;
-    }
-
-    // Check if the log file stream is open
-    if ( !log_ident->stream.is_open() ) {
-      std::cerr << "[ERROR] Log file stream is not open for identifier '" << ident << "'.\n";
-      // IDEA: Consider throwing an exception or handling error specifically
-      return null_log_;
-    }
-
-
+    const std::string level_stream = std::format("[{}] ", level_( level ) );
+    const std::string shortened_path_stream = strlen( file ) == 0 ? "" : std::format("{}", shortened_path_( file ) );
+    const std::string line_stream = line == 0 ? "" : std::format("{}", line );
+    const std::string location_stream = std::format( "[{}:{}]", shortened_path_stream, line_stream );
     // Write log prefix with level, file, and line
-    log_ident->stream << "[" << level_( level ) << "] "
-           << "[" << shortened_path_( file ) << ":" << line << "] ";
+    log_ident->stream << level_stream << location_stream;
     return log_ident->stream;
   }
+}
+
+std::ostream& log::stream( const char* ident ) {
+  if ( DEBUG ) {
+    { // MARK (LOG) MUTEX LOCK
+      std::shared_lock lock( mtx_ );
+      debug_file_is_active_();
+      const std::string log_stream_signature = std::format("log::stream( ident[{}] ) called ⇣", ident );
+      debug_stream_( __FILE__, __LINE__, INFO ) << "log::stream() called ⇣" << std::endl;
+    }
+  }
+
+  if ( const std::optional<log_t*> null_stream = null_stream_( ident ) ) return null_stream.value()->stream;
+
+  return null_log_;
+
 }
 
 // MARK (LOG) PRIVATE METHODS
@@ -501,7 +486,51 @@ void log::mkdir_default_( const std::filesystem::path& path ){
   }
 }
 
-const char* log::level_( const char level ) {
+std::optional<log_t*> log::null_stream_( const std::string& ident ){
+
+  if ( !is_activated_() ) return std::nullopt;
+
+  // Check if the log_registry is nullptr
+  if (log_registry_ == nullptr) {
+    std::cerr << "[ERROR] log_registry_ is nullptr\n";
+    // IDEA: Consider throwing an exception or handling error specifically
+    return std::nullopt;
+  }
+
+  // Check if the identifier exists in log_registry_
+  if ( !log_registry_->contains( ident ) ) {
+    std::cerr << "[ERROR] Invalid log identifier '" << ident << "'.\n";
+    // IDEA: Consider throwing an exception or handling error specifically
+    return std::nullopt;
+  }
+
+  log_t* log_ident = &log_registry_->at( ident );
+
+  // Check if the log is active
+  if ( !log_ident->settings.active ) {
+    std::cerr << "[ERROR] Logging is disabled for identifier '" << ident << "'.\n";
+    // IDEA: Consider throwing an exception or handling error specifically
+    return std::nullopt;
+  }
+
+  // Check if the log is running
+  if ( !log_ident->running ) {
+    std::cerr << "[ERROR] Log is not running for identifier '" << ident << "'.\n";
+    // IDEA: Consider throwing an exception or handling error specifically
+    return std::nullopt;
+  }
+
+  // Check if the log file stream is open
+  if ( !log_ident->stream.is_open() ) {
+    std::cerr << "[ERROR] Log file stream is not open for identifier '" << ident << "'.\n";
+    // IDEA: Consider throwing an exception or handling error specifically
+    return std::nullopt;
+  }
+
+  return log_ident;
+}
+
+const char* log::level_( const Level level ) {
 
   switch ( level ) {
   case INFO:
