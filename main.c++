@@ -1,10 +1,10 @@
 #include "log.h++"
 
-#include <thread>
 #include <atomic>
-#include <random>
 #include <csignal>
 #include <iostream>
+#include <random>
+#include <thread>
 
 // Global atomic flag to signal when to stop the thread
 std::atomic<bool> running(true);
