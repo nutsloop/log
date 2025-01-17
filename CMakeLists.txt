@@ -37,7 +37,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 # Optimization flags
 set(OPT_FLAGS "-O3 -march=native -flto")
 set(DEBUG_FLAGS "-g -O0 -fno-omit-frame-pointer")
-set(RELEASE_FLAGS "${OPT_FLAGS} -DNDEBUG")
+set(RELEASE_FLAGS "${OPT_FLAGS} -DNDEBUG -DDEBUG_LOG=false")
 set(RELWITHDEBINFO_FLAGS "${OPT_FLAGS} -g -DNDEBUG")
 set(EXTRA_FLAGS "-fexperimental-library")
 

@@ -20,7 +20,6 @@ void signal_handler(int signal) {
 // it is not meant to be compiled or run directly
 int main() {
 
-  #define LOG nutsloop::log::stream( "log", __FILE__, __LINE__, nutsloop::Level::INFO )
   const nutsloop::log_settings_t llog_settings{
     .ident = "log",
     .filename = "log.log",

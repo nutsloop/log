@@ -7,9 +7,6 @@
 
 namespace nutsloop {
 
-// HINT: log internal debug file.
-constexpr bool DEBUG = true;
-
 std::atomic<bool> log::tmp_debug_file_already_set_{ false };
 std::atomic<std::string*> log::tmp_debug_file_path_{};
 std::unique_ptr<std::ofstream> log::debug_tmp_file_stream_{ nullptr };

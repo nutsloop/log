@@ -1,41 +1,46 @@
 #pragma once
+// MARK: (log) log debug pre-processor
+#ifndef DEBUG_LOG
+// HINT: default value if not defined elsewhere
+#define DEBUG_LOG true
+#endif
+
+#if DEBUG_LOG == true
+
+#warning "DEBUG_LOG is enabled"
+
+constexpr bool DEBUG = true;
+
+#define LOG log::stream( "log", __FILE__, __LINE__, nutsloop::Level::INFO )
+#define LOG_WARN log::stream( "log", __FILE__, __LINE__, nutsloop::Level::WARN )
+#define LOG_ERROR log::stream( "log", __FILE__, __LINE__, nutsloop::Level::ERROR )
+
+#else
+
+constexpr bool DEBUG = false;
+
+// Mock macros to provide `<<` compatibility
+#include <sstream>
+
+#define LOG std::ostream(nullptr) // No-op stream
+#define LOG_WARN std::ostream(nullptr) // No-op stream
+#define LOG_ERROR std::ostream(nullptr) // No-op stream
+
+#endif
+
+#include "types.h++"
 
 #include <atomic>
-#include <filesystem>
-#include <fstream>
-#include <optional>
 #include <shared_mutex>
-#include <unordered_map>
 
 constexpr size_t LOG_MAX_SIZE = 10 * 1024 * 1024;
 
 namespace nutsloop {
 
+using namespace nlog::types;
+
 const std::filesystem::path nutsloop_dir = std::filesystem::path(std::getenv("HOME")) / ".nutsloop";
 const std::filesystem::path nutsloop_logs_directory = nutsloop_dir / "logs";
-
-struct log_settings_t {
-  std::string ident;
-  std::string filename;
-  std::optional<std::filesystem::path> directory;
-  std::optional<std::string> session_header;
-  bool active;
-};
-
-struct log_t {
-  log_settings_t settings;
-  std::ofstream stream;
-  bool running;
-};
-
-enum Level {
-  INFO,
-  WARN,
-  ERROR,
-  NONE
-};
-
-using log_registry_t = std::unordered_map<std::string, log_t>;
 
 class log {
 public:
