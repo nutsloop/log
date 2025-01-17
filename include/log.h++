@@ -89,8 +89,10 @@ public:
    */
   static void set( const log_settings_t& settings );
 
+  // HINT: not completely implemented yet.
+  static bool full_running( const std::string& ident );
+
   // not implemented yet
-  static bool full_running( std::string ident );
   static void start( std::string ident ) = delete;
   static void stop( std::string ident ) = delete;
   static void close( std::string ident ) = delete;
@@ -135,6 +137,7 @@ public:
 
 private:
 
+#if DEBUG_LOG
   // MARK: (LOG) private static log debug info file methods and fields
   static std::atomic<bool> tmp_debug_file_already_set_;
   static std::atomic<std::string*> tmp_debug_file_path_;
@@ -191,6 +194,7 @@ private:
    * @return A reference to the debug output stream prepared for logging.
    */
   static std::ofstream& debug_stream_( const char* file, int line_number = 0, Level level = INFO );
+#endif
 
   // MARK: (LOG) private static methods and fields
   static std::shared_mutex mtx_;
