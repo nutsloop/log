@@ -11,7 +11,6 @@ set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
 # CMAKE_BINARY_DIR should be build
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(INSTALL_DIR /usr/local/bin)
 
 # Collect include directories recursively
 file(GLOB_RECURSE HEADER_DIRS LIST_DIRECTORIES true "${INCLUDE_DIR}/*")
