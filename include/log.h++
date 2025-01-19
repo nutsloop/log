@@ -33,6 +33,20 @@ constexpr bool DEBUG = false;
 #include <atomic>
 #include <shared_mutex>
 
+
+// MARK: (LOG) experimental instance class pre-processor
+#ifndef EXPERIMENTAL_INSTANCE
+// HINT: default value if not defined elsewhere
+#define EXPERIMENTAL_INSTANCE false
+#endif
+
+#if EXPERIMENTAL_INSTANCE == true
+
+#warning "EXPERIMENTAL_INSTANCE is enabled"
+
+#include "instance.h++"
+#endif
+
 constexpr size_t LOG_MAX_SIZE = 10 * 1024 * 1024;
 
 namespace nutsloop {
@@ -96,6 +110,11 @@ public:
    * to be applied to the logging system.
    */
   static void set( const log_settings_t& settings );
+
+#if EXPERIMENTAL_INSTANCE == true
+
+  static std::unique_ptr<nlog::instance> set_instance( const log_settings_t& settings );
+#endif
 
   // HINT: not completely implemented yet.
   static bool full_running( const std::string& ident );
