@@ -44,6 +44,14 @@ const std::filesystem::path nutsloop_logs_directory = nutsloop_dir / "logs";
 
 class log {
 public:
+
+  // Prevents the instantiation of the class.
+  // The class is designed to have only static members.
+  log() = delete;
+  // Deleting the destructor reinforces the intent
+  // that this class should never be instantiated or destroyed.
+  ~log() = delete;
+
   /**
    * Activates the logging system and prepares necessary resources for logging.
    *
