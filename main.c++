@@ -30,6 +30,11 @@ int main() {
   log::activate_stream_redirect();
   log::set( llog_settings );
 
+  const auto llog_instance = log::set_instance( llog_settings );
+
+  log::stream( "log", "", *"", nutsloop::Level::WARN ) << '\n'
+    << llog_instance->name() << '\n';
+
   std::cout << "std::cout >> Hello World!" << '\n';
   std::cerr << "std::cerr >> Hello World!" << '\n';
 
