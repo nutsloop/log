@@ -33,13 +33,13 @@ _Release-type build of the library._
 
 - It enables the library’s internal debug logs.
 - The debug file location is under the directory `/var/tmp`.
-- The filename is generated with a unique name, such as  
+- The filename is generated with a unique name, such as
   `/var/tmp/15-01-2025_07:02:34_nutsloop_lognyipfv`.
 - At the beginning of your program, you will be prompted to decide what to do with older logs.
   1. You can delete all of them or select one to be reassigned.
   2. Choosing to delete all of them will create a new log file.
   3. You can selectively delete one file at a time and then select one to be reassigned or anyway create a new file.
-  4. Alternatively, you may choose to retain the existing file/s and create a new one. 
+  4. Alternatively, you may choose to retain the existing file/s and create a new one.
 
 > ⚠ library debug logs can occupy a lot of disk space.
 
@@ -52,21 +52,47 @@ cmake --build build/release
 
 ```
 
-Once the library has been created, link it to your program,  
+Once the library has been created, link it to your program,
 and add the root directory of the repository to the include paths of your program.
 
 > ⚠ By default, it builds a static library.
+
+**_command to build it as a shared library._**
+
+```bash
+
+# simply clone it form GitHub and cd into the root directory of the repository.
+git clone https://github.com/nutsloop/log.git && cd log
+cmake -S . -B build/release -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+cmake --build build/release
+
+```
 
 ___
 
 ## Initialization and Usage
 
-The whole class is a container of static methods, and it is not necessary to an instance of the class.
-It has default directories, can be changed if specified, located in the user home directory.  
+The whole class is a container of static methods, and it is not necessary to instantiate the class.
+In fact, the constructors are ` = delete` in the library itself.
+
+It has default directories, can be changed if specified, located in the user home directory.
+
 `/home/user/.nutsloop/logs`
 
-It has a default header, can be changed if specified, so formatted:  
+**custom directory**
+
+> ⚠ this feature is not implemented yet.
+
+___
+
+It has a default header, can be changed if specified, so formatted:
 `◀︎[identifier]---------17-01-2025_11:16:35---------[/home/user/.nutsloop/logs/filename.log]▶︎`
+
+**custom header**
+
+> ⚠ this feature is not implemented yet.
+
+___
 
 ### Setting up a log.
 
@@ -98,7 +124,6 @@ ___
 #### **nutsloop::log::set(`const log_settings_t& settings`)**
 ###### the log set method.
 
-This method can be called without an instance of the class.  
 Accepts only one parameter, that is a reference to the struct `log_settings_t`.
 It sets one unique log, using the provided `log_settings_t`.
 
@@ -106,6 +131,8 @@ ___
 
 ``` c++
 #include "log.h++"
+
+// let's assume that the below code is wrapped in the main function.
 
 // let's give the log basic settings.
 const nutsloop::log_settings_t llog_settings{
@@ -117,43 +144,64 @@ const nutsloop::log_settings_t llog_settings{
 nutsloop::log::setup( llog_settings );
 ```
 
-- `example_logger`: Unique identifier for the logger.
-- `example.log`: File name where logs will be written.
-
-**Optional Parameters**:
-- `enabled`: Pass `false` to disable logging for this identifier.
+_example continues below_
 
 ___
 
 ### Writing Logs
 
-Logs are written using the `stream()` method. You can specify the log level (`INFO`, `WARN`, `ERROR`) and context information (source file and line number).
+| **Name**        | **Details**                                                                                       |
+|-----------------|---------------------------------------------------------------------------------------------------|
+| **Signature**   | `static std::ostream& stream(const char* ident, const char* file, int line, Level level = INFO);` |
+| **Description** | This method returns a reference to an output stream for logging purposes.                         |
+| **Parameters**  |                                                                                                   |
+| `ident`         | A `const char*` that represents the identifier of the message source.                             |
+| `file`          | A `const char*` that specifies the file path where the method is called.                          |
+| `line`          | An `int` representing the line number in the code where this method is invoked.                   |
+| `level`         | An optional `Level` indicating the log level. Default value: `INFO`.                              |
+| **Returns**     | A reference to `std::ostream` used for logging.                                                   |
 
-``` c++
-nutsloop::log::stream("example_logger", __FILE__, __LINE__, 'I') << "This is an info message.\n";
-nutsloop::log::stream("example_logger", __FILE__, __LINE__, 'E') << "This is an error message.\n";
+**Notes**
+
+- The `Level` type is expected to be an enumerated type (e.g., `enum`)
+  ```c++
+  enum Level {
+    INFO,
+    WARN,
+    ERROR,
+    NONE
+  };
+  ```
+
+This function facilitates structured logging by accepting relevant metadata (identifier, file, line, and log level).
+
+___
+
+_example continuation_
+
+```c++
+// first let's activate the log system
+// without this the log won't write to file/s
+nutsloop::log::activate();
+// no need, to call `activate` again cause is a global atomic bool
+
+nutsloop::log::stream("log", __FILE__, __LINE__, nutsloop::nlog::types::Level::INFO) << '\n'
+  << "main has been called" << '\n';
+
 ```
+ 
 
-- The log message includes metadata such as log level, source file, and line number for easy debugging.
-- If the provided identifier is invalid or logging is disabled, logs will be silently ignored.
+___
 
 ### Cleaning Up
 
-Before program termination, ensure to call `cleanup` to release resources, close opened log files, and restore stream states.
+> ⚠ documentation is not written yet.
 
-``` c++
-nutsloop::log::cleanup();
-```
+___
 
 ### Disabling Logs Globally
 
-You can disable all logging globally by using the `set_logs` function:
-
-``` c++
-nutsloop::log::set_logs(true); // Disables logging globally
-```
-
-Set it back to `false` to enable logging again.
+> ⚠ documentation is not written yet.
 
 ___
 
@@ -161,34 +209,20 @@ ___
 
 Logs exceeding **10 MB** will be archived automatically by renaming the current file to `<filename>.backup` and starting a new session in a fresh file.
 
+> ⚠ this feature is partially implemented.  
+> it split the log file only when `fresh` running the application.  
+> needs to do so during runtime.
+
 ___
 
 ## Example Workflow
 
-``` c++
-#include "log.h++"
-
-int main() {
-    // Initialize logger
-    nutsloop::log::setup("app", "app.log");
-
-    // Start logging
-    for (int i = 0; i < 10; ++i) {
-        nutsloop::log::stream("app", __FILE__, __LINE__, 'I') << "Iteration " << i << "\n";
-    }
-
-    // Clean up resources
-    nutsloop::log::cleanup();
-
-    return 0;
-}
-```
+___
 
 ## Notes
 
-1. **Environment**: Default directories (`~/.nutsloop/logs`) are used for storing logs. Ensure the program has the necessary permissions to create these directories.
-2. **Customization**: Users can extend and modify the library to fit specific needs (e.g., adding custom log levels).
-3. **Fallbacks**: If a log file cannot open, warnings are printed to `std::cerr`.
+- **Environment**: Default directories (`~/.nutsloop/logs`) are used for storing logs. Ensure the program has the necessary permissions to create these directories.
+- **Debug log directory if built in Debug**: `/var/tmp`
 
 ## Contributions
 
