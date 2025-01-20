@@ -11,11 +11,13 @@ const std::filesystem::path nutsloop_dir = std::filesystem::path(std::getenv("HO
 const std::filesystem::path nutsloop_logs_directory = nutsloop_dir / "logs";
 
 struct log_settings_t {
+
   std::string ident;
   std::string filename;
   bool active{};
   std::optional<std::filesystem::path> directory;
   std::optional<std::string> session_header;
+
   log_settings_t() = default;
   log_settings_t( std::string ident_,
     std::string filename_,
@@ -48,6 +50,7 @@ struct log_settings_t {
   }
 
 private:
+
   std::filesystem::path absolute_path_{};
   void determine_directory_absolute_path_() {
 
@@ -55,7 +58,6 @@ private:
       const std::filesystem::path current_working_directory = std::filesystem::canonical( std::filesystem::current_path() );
       directory.value() = current_working_directory / directory.value();
     }
-
   }
 };
 
