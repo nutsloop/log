@@ -53,9 +53,6 @@ namespace nutsloop {
 
 using namespace nlog::types;
 
-const std::filesystem::path nutsloop_dir = std::filesystem::path(std::getenv("HOME")) / ".nutsloop";
-const std::filesystem::path nutsloop_logs_directory = nutsloop_dir / "logs";
-
 class log {
 public:
 
