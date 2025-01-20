@@ -26,15 +26,39 @@ std::optional<log_t*> log::null_stream_( const std::string& ident ){
 
   // Check if the log is active
   if ( !log_ident->settings.active ) {
-    std::cerr << "[ERROR] Logging is disabled for identifier '" << ident << "'.\n";
-    // IDEA: Consider throwing an exception or handling error specifically
+
+    if ( DEBUG ) {
+#if DEBUG_LOG
+      { // MARK (LOG) MUTEX LOCK
+        std::shared_lock lock( mtx_ );
+        debug_file_is_active_();
+        debug_stream_( __FILE__, __LINE__, INFO )
+          << std::format("log::null_stream_([{}]) called ⇣", ident) << '\n'
+          << "  log is not active: [ " << std::boolalpha << log_ident->settings.active << " ] " << '\n'
+          << "  returning a null_log_ (empty buffer)" << '\n';
+      }
+#endif
+    }
+
     return std::nullopt;
   }
 
   // Check if the log is running
   if ( !log_ident->running ) {
-    std::cerr << "[ERROR] Log is not running for identifier '" << ident << "'.\n";
-    // IDEA: Consider throwing an exception or handling error specifically
+
+    if ( DEBUG ) {
+#if DEBUG_LOG
+      { // MARK (LOG) MUTEX LOCK
+        std::shared_lock lock( mtx_ );
+        debug_file_is_active_();
+        debug_stream_( __FILE__, __LINE__, INFO )
+          << std::format("log::null_stream_([{}]) called ⇣", ident) << '\n'
+          << "  log is not running: [ " << std::boolalpha << log_ident->running << " ] " << '\n'
+          << "  returning a null_log_ (empty buffer)" << '\n';
+      }
+#endif
+    }
+
     return std::nullopt;
   }
 

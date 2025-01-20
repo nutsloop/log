@@ -34,6 +34,7 @@ std::ostream& log::stream( const char* ident, const char* file, const int line, 
 }
 
 std::ostream& log::stream( const char* ident ) {
+
   if ( DEBUG ) {
 #if DEBUG_LOG
     { // MARK (LOG) MUTEX LOCK
