@@ -377,7 +377,6 @@ private:
      *
      * @param stream_out The output stream (e.g., `std::cout`) to be redirected.
      * @param stream_err The error stream (e.g., `std::cerr`) to be redirected.
-     * @param log_file_buffer Unused internal stream buffer parameter associated with log file handling.
      *
      * @return No return value, as this is a constructor.
      */
