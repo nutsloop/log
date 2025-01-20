@@ -107,6 +107,38 @@ public:
    * to be applied to the logging system.
    */
   static void set( const log_settings_t& settings );
+  /**
+   * Initiates the logging process for the specified log identifier.
+   *
+   * This function sets the 'running' status of the identified log to active if the
+   * log exists in the registry. It ensures that the log is initialized and ready
+   * for receiving entries. Debug information regarding the state of the log is
+   * reported if debugging is enabled.
+   *
+   * If the provided identifier is not found in the log registry, the function
+   * logs an error message in debug mode and exits without altering any state.
+   * Thread-safe mechanisms, such as shared locks, are utilized to ensure
+   * proper access control during the procedure.
+   *
+   * @param ident A string representing the unique identifier of the log instance
+   * to activate. This identifier is used to find the corresponding log in the registry.
+   *
+   * @note If the DEBUG flag is enabled, extensive debug logs are generated to
+   * trace the function execution, including whether the log was previously in a
+   * 'running' state, and any errors associated with missing identifiers.
+   */
+  static void start( const std::string& ident );
+  /**
+   * Stops the logging process for a given log identifier.
+   *
+   * This method marks the logging process associated with the provided identifier as no longer running.
+   * If the log identifier does not exist in the registry, the method returns without making changes.
+   * Includes debug logging to provide detailed diagnostics when `DEBUG` is enabled.
+   * Thread-safe locking mechanisms are employed during operations to ensure safety in multi-threaded contexts.
+   *
+   * @param ident The identifier of the log to be stopped. If the identifier is not found, no action is performed.
+   */
+  static void stop( const std::string& ident );
 
 #if EXPERIMENTAL_INSTANCE == true
   // MARK: (LOG) experimental instance methods and fields
@@ -117,8 +149,6 @@ public:
   static bool full_running( const std::string& ident );
 
   // not implemented yet
-  static void start( std::string ident ) = delete;
-  static void stop( std::string ident ) = delete;
   static void close( std::string ident ) = delete;
   static void flush( std::string ident ) = delete;
   static void remove( std::string ident ) = delete;
