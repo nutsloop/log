@@ -139,6 +139,7 @@ public:
    * @param ident The identifier of the log to be stopped. If the identifier is not found, no action is performed.
    */
   static void stop( const std::string& ident );
+  static void flush( const std::string& ident );
 
 #if EXPERIMENTAL_INSTANCE == true
   // MARK: (LOG) experimental instance methods and fields
@@ -150,7 +151,6 @@ public:
 
   // not implemented yet
   static void close( std::string ident ) = delete;
-  static void flush( std::string ident ) = delete;
   static void remove( std::string ident ) = delete;
 
   /**

@@ -78,8 +78,40 @@ int main() {
   std::this_thread::sleep_for( std::chrono::seconds( 10 ) ); // Sleep for 10 seconds
   log::activate();
 
-  // Wait for the thread to finish
+  std::thread start_and_stop_stream_log( []() {
+
+    const nutsloop::log_settings_t start_stop_log(
+      "start_stop",
+      "start_stop.log",
+      true,
+      std::nullopt,
+      std::nullopt
+    );
+    log::set( start_stop_log );
+    log::stop( "start_stop" );
+    LOG << "start_stop set to running false" << '\n';
+
+    while ( running ) {
+
+      LOG << "trying to log to NOT running START_STOP log" << '\n';
+      log::stream( "start_stop" ) << "Hello World! NOT RUNNING" << '\n';
+      LOG << "start_stop set to running true" << '\n';
+      log::start( "start_stop" );
+      LOG << "trying to log to running START_STOP log" << '\n';
+      log::stream( "start_stop" ) << "Hello World! RUNNING" << '\n';
+      LOG << "start_stop set to running false" << '\n';
+      log::stop( "start_stop" );
+
+      std::this_thread::sleep_for( std::chrono::seconds( 3 ) ); // Sleep for 3 seconds
+    }
+  });
+
+  // Wait for the threads to finish
+  start_and_stop_stream_log.join();
   random_stream_thread.join();
+
+  // Flush the log file created by the thread start_and_stop_stream_log
+  log::flush( "start_stop" );
 
   return 0;
 }
