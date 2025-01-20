@@ -4,13 +4,17 @@
 
 namespace nutsloop::nlog {
 
-instance::instance( log_settings_t settings ) : settings_{std::move( settings )} {
-
-  this->name_ = settings_.ident;
+instance::instance( log_t* log ) : log_{ log } {
 }
 
-std::string instance::name() const {
-  return name_;
+std::string instance::ident() const {
+  return log_->settings.ident;
 }
+
+std::ostream& instance::ostream() const {
+
+  return log_->stream;
+}
+
 
 }

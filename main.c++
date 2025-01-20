@@ -20,12 +20,6 @@ void signal_handler( const int signal ) {
 // it is not meant to be compiled or run directly
 int main() {
 
-  const nutsloop::log_settings_t llog_settings{
-    .ident = "log",
-    .filename = "log.log",
-    .active = true
-  };
-
   log::activate();
 
   const nutsloop::log_settings_t llog_settings(
@@ -37,11 +31,12 @@ int main() {
   );
   log::set( llog_settings );
 
-  const auto llog_instance = log::set_instance( llog_settings );
-
+  const auto llog_instance = log::get_instance( llog_settings.ident );
   log::stream( "log", "", *"", nutsloop::Level::WARN ) << '\n'
-    << llog_instance->name() << '\n';
+    << llog_instance->ident() << '\n';
+  llog_instance->ostream() << "llog_ostream >> Hello World!" << '\n';
 
+  log::activate_stream_redirect();
   std::cout << "std::cout >> Hello World!" << '\n';
   std::cerr << "std::cerr >> Hello World!" << '\n';
 
@@ -62,7 +57,7 @@ int main() {
     while ( running ) {
       const int random_number = dis( gen );
       LOG << "Random Number: " << random_number << '\n';
-      std::this_thread::sleep_for( std::chrono::seconds( 2 ) ); // Sleep for 1 second
+      std::this_thread::sleep_for( std::chrono::seconds( 2 ) ); // Sleep for 2 seconds
     }
   } );
 
@@ -80,7 +75,7 @@ int main() {
 
   log::deactivate();
 
-  std::this_thread::sleep_for( std::chrono::seconds( 10 ) ); // Sleep for 1 second
+  std::this_thread::sleep_for( std::chrono::seconds( 10 ) ); // Sleep for 10 seconds
   log::activate();
 
   // Wait for the thread to finish

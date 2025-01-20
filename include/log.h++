@@ -109,8 +109,8 @@ public:
   static void set( const log_settings_t& settings );
 
 #if EXPERIMENTAL_INSTANCE == true
-
-  static std::unique_ptr<nlog::instance> set_instance( const log_settings_t& settings );
+  // MARK: (LOG) experimental instance methods and fields
+  static std::unique_ptr<nlog::instance> get_instance( const std::string& ident );
 #endif
 
   // HINT: not completely implemented yet.

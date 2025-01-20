@@ -7,11 +7,11 @@ using namespace nutsloop::nlog::types;
 
 class instance{
 public:
-  explicit instance( log_settings_t  settings );
-  [[nodiscard]] std::string name() const;
+  explicit instance( log_t* log );
+  [[nodiscard]] std::string ident() const;
+  [[nodiscard]] std::ostream& ostream() const;
 private:
-  log_settings_t settings_;
-  std::string name_;
+  log_t* log_;
 };
 
 }
