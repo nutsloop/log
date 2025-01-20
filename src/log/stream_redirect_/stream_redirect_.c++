@@ -4,14 +4,13 @@
 
 namespace nutsloop {
 
-log::stream_redirect_::stream_redirect_(std::ostream& stream_out, std::ostream& stream_err, std::streambuf* log_file_buffer) :
-      original_cout_(stream_out.rdbuf()),
-      original_cerr_(stream_err.rdbuf()) {
+log::stream_redirect_::stream_redirect_( std::ostream& stream_out, std::ostream& stream_err ) :
+    original_cout_( stream_out.rdbuf() ), original_cerr_( stream_err.rdbuf() ) {
 
   this->cout_file_.open( nutsloop::nutsloop_logs_directory / "nutsloop_cout.log", std::ios::out | std::ios::app );
   this->cerr_file_.open( nutsloop::nutsloop_logs_directory / "nutsloop_cerr.log", std::ios::out | std::ios::app );
 
-  if ( ! this->cout_file_.is_open() ) {
+  if ( !this->cout_file_.is_open() ) {
     if ( DEBUG ) {
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
@@ -25,7 +24,7 @@ log::stream_redirect_::stream_redirect_(std::ostream& stream_out, std::ostream& 
     return;
   }
 
-  if ( ! this->cerr_file_.is_open() ) {
+  if ( !this->cerr_file_.is_open() ) {
     if ( DEBUG ) {
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
@@ -53,4 +52,4 @@ log::stream_redirect_::~stream_redirect_() {
   std::cerr.rdbuf( original_cerr_ );
 }
 
-}
+} // namespace nutsloop

@@ -140,12 +140,8 @@ void log::set( const log_settings_t& settings ) {
     throw std::runtime_error( *log_file_stream_error );
   }
 
-  if ( is_stream_redirect_active_() ) {
-    // Setup stream redirection only once
-    if ( !stream_redirect_pointer_ ) {
-      stream_redirect_pointer_ = std::make_unique<stream_redirect_>( std::cout, std::cerr, log_ident->stream.rdbuf() );
-    }
-  }
+  // HINT: maybe find a purpose for this? :D
+  //if ( is_stream_redirect_active_() ) {}
 
   log_ident->stream << std::unitbuf;
 

@@ -5,6 +5,10 @@ namespace nutsloop {
 void log::activate_stream_redirect() {
 
   [[maybe_unused]] const bool previous_stream_redirect_active = stream_redirect_active_.exchange( true );
+  // Setup stream redirection only once
+  if ( !stream_redirect_pointer_ ) {
+    stream_redirect_pointer_ = std::make_unique<stream_redirect_>( std::cout, std::cerr );
+  }
   if ( DEBUG ) {
 #if DEBUG_LOG
     {

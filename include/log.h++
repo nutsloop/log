@@ -381,7 +381,7 @@ private:
      *
      * @return No return value, as this is a constructor.
      */
-    stream_redirect_(std::ostream& stream_out, std::ostream& stream_err, std::streambuf* log_file_buffer);
+    stream_redirect_( std::ostream& stream_out, std::ostream& stream_err );
 
     /**
      * Destructor for the stream_redirect_ class, responsible for cleaning up and restoring
