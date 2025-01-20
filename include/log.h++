@@ -139,6 +139,19 @@ public:
    * @param ident The identifier of the log to be stopped. If the identifier is not found, no action is performed.
    */
   static void stop( const std::string& ident );
+  /**
+   * Flushes and resets the specified log output stream based on its identifier.
+   *
+   * This method ensures that the log associated with the provided identifier is
+   * properly flushed and reopened with clean content. The internal logging structure
+   * is thread-safe with appropriate locks during the operation.
+   *
+   * If the log identifier does not exist in the registry, the method logs an error
+   * in debug mode and terminates without further action.
+   *
+   * @param ident The unique identifier of the log to be flushed. This identifier
+   *              must exist in the log registry for the operation to complete.
+   */
   static void flush( const std::string& ident );
 
 #if EXPERIMENTAL_INSTANCE == true
