@@ -27,7 +27,14 @@ int main() {
   };
 
   log::activate();
-  log::activate_stream_redirect();
+
+  const nutsloop::log_settings_t llog_settings(
+    "log",
+    "log.log",
+    true,
+    std::nullopt,
+    std::nullopt
+  );
   log::set( llog_settings );
 
   const auto llog_instance = log::set_instance( llog_settings );
