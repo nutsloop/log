@@ -25,7 +25,11 @@ public:
   [[nodiscard]] bool running() const = delete;
 
   // MARK: (log_instance) manipulation
+
+  void start() const;
+  void stop() const;
   void flush() const;
+
 private:
   log_t* log_;
 };
