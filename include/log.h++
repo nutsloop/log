@@ -206,6 +206,7 @@ public:
   static void deactivate_stream_redirect();
 private:
 
+// TODO: all the debug methods and field must be moved in a separate class
 #if DEBUG_LOG
   // MARK: (LOG) private static log debug info file methods and fields
   static std::atomic<bool> tmp_debug_file_already_set_;
