@@ -112,6 +112,7 @@ int main() {
 
   // Flush the log file created by the thread start_and_stop_stream_log
   log::flush( "start_stop" );
+  llog_instance->flush();
 
   return 0;
 }
