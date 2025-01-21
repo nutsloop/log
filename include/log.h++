@@ -162,9 +162,10 @@ public:
   // HINT: not completely implemented yet.
   static bool full_running( const std::string& ident );
 
-  // not implemented yet
+  // HINT: not implemented yet
   static void close( std::string ident ) = delete;
   static void remove( std::string ident ) = delete;
+  static void unset( std::string ident ) = delete;
 
   /**
    * Provides an output stream to log messages for a specified identifier with metadata.
@@ -201,7 +202,8 @@ public:
    * Debug logs provide insights into the activation state changes.
    */
   static void activate_stream_redirect();
-
+  // HINT: not implemented yet
+  static void deactivate_stream_redirect();
 private:
 
 #if DEBUG_LOG
