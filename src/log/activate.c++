@@ -10,8 +10,11 @@ void log::activate() {
     {
       // MARK (LOG) MUTEX LOCK
       std::shared_lock lock{ mtx_ };
-      debug_file_is_active_();
-      debug_stream_( __FILE__, __LINE__, INFO ) << "log::activate() called ⇣" << '\n'
+      if ( internal_debug_ == nullptr ) {
+        internal_debug_ = std::make_unique<nlog::internal_debug>();
+      }
+      internal_debug_->file_is_active();
+      internal_debug_->stream( __FILE__, __LINE__, INFO ) << "log::activate() called ⇣" << '\n'
         << "  activated_ ( "
         << " was -> [ " << std::boolalpha << previous_activate_status << " ]" // previous
         << " => now[ " << std::boolalpha << activated_ << " ] )" << std::endl; // actual
@@ -28,7 +31,7 @@ void log::activate() {
       {
         std::shared_lock lock{ mtx_ };
         const auto log_registry_address = reinterpret_cast<uintptr_t>(&log_registry_);
-        debug_stream_( __FILE__, __LINE__, INFO ) << "log_registry_ is nullptr, creating..." << '\n'
+        internal_debug_->stream( __FILE__, __LINE__, INFO ) << "log_registry_ is nullptr, creating..." << '\n'
           << std::format("pointer with address -> 0x{:x}", log_registry_address) << std::endl;
       }
 #endif
