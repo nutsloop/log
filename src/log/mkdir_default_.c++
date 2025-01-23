@@ -13,7 +13,7 @@ void log::mkdir_default_( const std::filesystem::path& path ){
 #if DEBUG_LOG
         { // MARK (LOG) MUTEX LOCK
           std::shared_lock lock( mtx_ );
-          debug_stream_( __FILE__, __LINE__, WARN )
+          internal_debug_->stream( __FILE__, __LINE__, WARN )
             << "default directory '" << path << "' already exists." << std::endl;
         }
 #endif
