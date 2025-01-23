@@ -1,8 +1,10 @@
-#include "log.h++"
+#pragma once
 
-namespace nutsloop {
+#include "types.h++"
 
-const char* log::level_( const Level level ) {
+using namespace nutsloop::nlog::types;
+
+inline const char* level( const Level level ) {
 
   switch ( level ) {
   case INFO:
@@ -11,11 +13,9 @@ const char* log::level_( const Level level ) {
     return "WARN";
   case ERROR:
     return "ERROR";
-  case NONE:
+  case  NONE:
     return "";
   }
 
   return "UNKNOWN";
-}
-
 }

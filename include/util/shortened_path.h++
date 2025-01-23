@@ -1,10 +1,8 @@
-#include "log.h++"
-
+#pragma once
+#include <filesystem>
 #include <sstream>
 
-namespace nutsloop {
-
-std::string log::shortened_path_( const std::filesystem::path& dir ) {
+inline std::string shortened_path(const std::filesystem::path& dir) {
   std::vector<std::string> components;
 
   for ( const auto& part : dir ) {
@@ -24,6 +22,4 @@ std::string log::shortened_path_( const std::filesystem::path& dir ) {
   }
 
   return shortened_dir.str();
-}
-
 }
