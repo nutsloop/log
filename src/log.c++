@@ -3,9 +3,10 @@
 namespace nutsloop {
 
 #if DEBUG_LOG
-std::atomic<bool> log::tmp_debug_file_already_set_{ false };
-std::atomic<std::string*> log::tmp_debug_file_path_{};
-std::unique_ptr<std::ofstream> log::debug_tmp_file_stream_{ nullptr };
+std::unique_ptr<nlog::internal_debug> log::internal_debug_{ nullptr };
+// std::atomic<bool> log::tmp_debug_file_already_set_{ false };
+// std::atomic<std::string*> log::tmp_debug_file_path_{};
+// std::unique_ptr<std::ofstream> log::debug_tmp_file_stream_{ nullptr };
 #endif
 
 std::shared_mutex log::mtx_;
