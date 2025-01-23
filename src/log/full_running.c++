@@ -7,8 +7,8 @@ bool log::full_running( const std::string& ident){
 #if DEBUG_LOG
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
-      debug_file_is_active_();
-      debug_stream_( __FILE__, __LINE__, INFO )
+      internal_debug_->file_is_active();
+      internal_debug_->stream( __FILE__, __LINE__, INFO )
         << std::format( "log::stream(ident[{}]) called ⇣", ident) << std::endl;
     }
 #endif
