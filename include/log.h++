@@ -322,42 +322,6 @@ private:
   static std::optional<log_t*> null_stream_( const std::string& ident );
 
   /**
-   * Maps the logging level to its corresponding string representation.
-   *
-   * This method transforms a given logging level enum into its respective
-   * string identifier for consistent use in logging outputs. Depending on the input,
-   * it returns the appropriate string corresponding to the specific logging level.
-   *
-   * The available mappings are as follows:
-   * - INFO: "INFO"
-   * - WARN: "WARN"
-   * - ERROR: "ERROR"
-   * - NONE: an empty string
-   *
-   * @param level The logging level to be converted.
-   * @return A constant character pointer to the string representation of the provided level.
-   *
-   * @note This function assumes valid enum values but provides a fallback for unknown inputs.
-   */
-  static const char* level_( Level level );
-
-  /**
-   * Generates a shortened version of the provided file system path.
-   * This function modifies the input path to create a more concise representation,
-   * which may be useful for log messages, user interfaces, or other scenarios
-   * where a full path might be too verbose.
-   *
-   * The method preserves critical parts of the path while abbreviating
-   * less significant segments. The specific logic for shortening depends on
-   * implemented rules and heuristics.
-   *
-   * @param dir The original path to be shortened, represented as a `std::filesystem::path`.
-   *
-   * @return A string containing the shortened version of the provided path.
-   */
-  static std::string shortened_path_(const std::filesystem::path &dir);
-
-  /**
    * Generates a new session header string for logging purposes.
    *
    * This method constructs a formatted header string that includes the session identifier,
@@ -371,21 +335,6 @@ private:
    * timestamp, and file name.
    */
   static std::string generate_new_session_header_( const std::string& ident, const std::string& filename );
-
-  /**
-   * Retrieves the current date and time as a formatted string.
-   *
-   * This method fetches the system's current date and time, formatting it in the
-   * "%d-%m-%Y_%H:%M:%S" format (day-month-year_hour:minute:second). If an error
-   * occurs during formatting, a fallback value "unknown-time" is returned.
-   *
-   * Debugging information may be logged to a temporary debugging stream if debugging
-   * is enabled and appropriate conditions are met.
-   *
-   * @return A string representing the current date and time, or "unknown-time" if
-   * an error occurs during formatting.
-   */
-  static std::string datetime_();
 
   // MARK: (LOGGER) private classes
   /**
