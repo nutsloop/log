@@ -57,7 +57,7 @@ int main() {
     while ( running ) {
       const int random_number = dis( gen );
       LOG << "Random Number: " << random_number << '\n';
-      std::this_thread::sleep_for( std::chrono::seconds( 2 ) ); // Sleep for 2 seconds
+      std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) ); // Sleep for 2 seconds
     }
   } );
 
@@ -102,7 +102,7 @@ int main() {
       LOG << "start_stop set to running false" << '\n';
       log::stop( "start_stop" );
 
-      std::this_thread::sleep_for( std::chrono::seconds( 3 ) ); // Sleep for 3 seconds
+      std::this_thread::sleep_for( std::chrono::milliseconds(500) ); // Sleep for 3 seconds
     }
   });
 
