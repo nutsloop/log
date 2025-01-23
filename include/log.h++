@@ -1,34 +1,7 @@
 #pragma once
-// MARK: (log) log debug pre-processor
-#ifndef DEBUG_LOG
-// HINT: default value if not defined elsewhere
-#define DEBUG_LOG true
-#endif
+#include "internal_debug.h++"
 
-#if DEBUG_LOG == true
-
-#warning "DEBUG_LOG is enabled"
-
-constexpr bool DEBUG = true;
-
-#define LOG log::stream( "log", __FILE__, __LINE__, nutsloop::Level::INFO )
-#define LOG_WARN log::stream( "log", __FILE__, __LINE__, nutsloop::Level::WARN )
-#define LOG_ERROR log::stream( "log", __FILE__, __LINE__, nutsloop::Level::ERROR )
-
-#else
-
-constexpr bool DEBUG = false;
-
-// Mock macros to provide `<<` compatibility
-#include <sstream>
-
-#define LOG std::ostream(nullptr) // No-op stream
-#define LOG_WARN std::ostream(nullptr) // No-op stream
-#define LOG_ERROR std::ostream(nullptr) // No-op stream
-
-#endif
-
-#include "types.h++"
+#include <types.h++>
 
 #include <atomic>
 #include <shared_mutex>
@@ -206,64 +179,9 @@ public:
   static void deactivate_stream_redirect();
 private:
 
-// TODO: all the debug methods and field must be moved in a separate class
 #if DEBUG_LOG
   // MARK: (LOG) private static log debug info file methods and fields
-  static std::atomic<bool> tmp_debug_file_already_set_;
-  static std::atomic<std::string*> tmp_debug_file_path_;
-  static std::unique_ptr<std::ofstream> debug_tmp_file_stream_;
-  /**
-   * Ensures that the internal debug logging file is active and ready for use.
-   *
-   * This method validates and initializes the temporary debug file stream for
-   * storing debug log entries. If the debugging file is not yet set or the stream
-   * is null, it creates the debug file, opens the output stream, and writes a session
-   * header along with relevant status information. If the stream is already active
-   * and open, this method logs the current state and ensures the file is ready for use.
-   *
-   * The method manages and logs the state of the debug file activation process,
-   * ensuring that file creation and stream handling occur as specified.
-   */
-  static void debug_file_is_active_();
-  /**
-   * Scans the temporary directory for internal debug log files, and provides
-   * an option to reassign or clean up these files based on user input.
-   *
-   * This method searches for debug log files in the temporary directory, identifies
-   * files with specific naming conventions, and allows the user to either delete the
-   * files or reassign one of them as the active debug log file for internal logging.
-   * If multiple debug files are found, the user is prompted to handle each file individually.
-   *
-   * @return A boolean indicating whether a debug log file was successfully reassigned.
-   * Returns true if a file was reassigned, and false otherwise.
-   */
-  [[nodiscard]] static bool debug_tmp_file_reassign_or_cleanup_();
-  /**
-   * Creates a temporary debug file and manages its lifecycle.
-   *
-   * This method generates a unique, secure temporary debug file for internal logging purposes.
-   * If a temporary file already exists or needs reassignment, the method invokes necessary
-   * cleanup routines and exits early. The temporary file is created using a secure naming convention
-   * with the current datetime to ensure uniqueness. Once created, the file's path is stored atomically
-   * for thread-safe access, and a flag is set to indicate its readiness for use.
-   *
-   * If file creation or closing operations fail, the method logs an error and terminates the application.
-   */
-  static void debug_tmp_file_create_();
-  /**
-   * Provides an output stream for logging debug information.
-   *
-   * This method formats and returns a reference to the debug stream configured
-   * with details such as the logging level, the source file, and the line number.
-   * It dynamically outputs the log message header to an internal debug file stream
-   * and prepares it for additional content.
-   *
-   * @param file The name of the source file where the log entry originates.
-   * @param line_number The line number in the source file associated with the log entry.
-   * @param level The logging level indicating the severity or category of the log entry.
-   * @return A reference to the debug output stream prepared for logging.
-   */
-  static std::ofstream& debug_stream_( const char* file, int line_number = 0, Level level = INFO );
+  static std::unique_ptr<nlog::internal_debug> internal_debug_;
 #endif
 
   // MARK: (LOG) private static methods and fields
