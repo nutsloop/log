@@ -7,8 +7,8 @@ void log::flush( const std::string& ident ) {
 #if DEBUG_LOG
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
-      debug_file_is_active_();
-      debug_stream_( __FILE__, __LINE__, INFO )
+      internal_debug_->file_is_active();
+      internal_debug_->stream( __FILE__, __LINE__, INFO )
         << std::format( "log::flush([{}]) called ⇣", ident ) << '\n';
     }
 #endif
@@ -19,7 +19,7 @@ void log::flush( const std::string& ident ) {
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock lock( mtx_ );
-        debug_stream_( __FILE__, __LINE__, ERROR )
+        internal_debug_->stream( __FILE__, __LINE__, ERROR )
           << std::format( "log::flush([{}]) called ⇣", ident ) << '\n'
           << std::format( "  log identified with `{}` not found.", ident ) << '\n';
       }
