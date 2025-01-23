@@ -31,8 +31,8 @@ std::optional<log_t*> log::null_stream_( const std::string& ident ){
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock lock( mtx_ );
-        debug_file_is_active_();
-        debug_stream_( __FILE__, __LINE__, WARN )
+        internal_debug_->file_is_active();
+        internal_debug_->stream( __FILE__, __LINE__, WARN )
           << std::format("log::null_stream_([{}]) called ⇣", ident) << '\n'
           << "  log is not active: [ " << std::boolalpha << log_ident->settings.active << " ] " << '\n'
           << "  returning a null_log_ (empty buffer)" << '\n';
@@ -50,8 +50,8 @@ std::optional<log_t*> log::null_stream_( const std::string& ident ){
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock lock( mtx_ );
-        debug_file_is_active_();
-        debug_stream_( __FILE__, __LINE__, WARN )
+        internal_debug_->file_is_active();
+        internal_debug_->stream( __FILE__, __LINE__, WARN )
           << std::format("log::null_stream_([{}]) called ⇣", ident) << '\n'
           << "  log is not running: [ " << std::boolalpha << log_ident->running << " ] " << '\n'
           << "  returning a null_log_ (empty buffer)" << '\n';
