@@ -9,7 +9,7 @@ bool log::is_activated_() {
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
 
-      debug_stream_( __FILE__, __LINE__, INFO ) << "log::is_activated_() called ⇣" << '\n'
+      internal_debug_->stream( __FILE__, __LINE__, INFO ) << "log::is_activated_() called ⇣" << '\n'
         << "  log system is active: [ " << std::boolalpha << activated_.load() << " ] " << std::endl; // actual
     }
 #endif
