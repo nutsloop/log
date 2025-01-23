@@ -15,7 +15,7 @@ log::stream_redirect_::stream_redirect_( std::ostream& stream_out, std::ostream&
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock lock( mtx_ );
-        debug_stream_( __FILE__, __LINE__, ERROR )
+        internal_debug_->stream( __FILE__, __LINE__, ERROR )
           << "log::stream_redirect_::stream_redirect_() failed to open cout<<log file '"
           << nutsloop::nutsloop_logs_directory / "nutsloop_cout.log" << "'" << std::endl;
       }
@@ -29,7 +29,7 @@ log::stream_redirect_::stream_redirect_( std::ostream& stream_out, std::ostream&
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock lock( mtx_ );
-        debug_stream_( __FILE__, __LINE__, ERROR )
+        internal_debug_->stream( __FILE__, __LINE__, ERROR )
           << "log::stream_redirect_::stream_redirect_() failed to open cerr<<log file '"
           << nutsloop::nutsloop_logs_directory / "nutsloop_cerr.log" << "'" << std::endl;
       }
