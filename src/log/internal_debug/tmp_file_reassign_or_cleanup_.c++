@@ -1,12 +1,12 @@
-#include "log.h++"
-
 #include <iostream>
 
-namespace nutsloop {
+#include "internal_debug.h++"
+
+namespace nutsloop::nlog {
 
 #if DEBUG_LOG
 
-bool log::debug_tmp_file_reassign_or_cleanup_() {
+bool internal_debug::tmp_file_reassign_or_cleanup_() {
 
   const std::string directory_path = "/var/tmp";
   std::vector<std::filesystem::path> debug_files_found;
@@ -57,8 +57,8 @@ bool log::debug_tmp_file_reassign_or_cleanup_() {
     std::cin >> response;
 
     if ( response == 'y' || response == 'Y' ) {
-      tmp_debug_file_path_.store( new std::string( file_path.string() ) ); // Atomic update
-      tmp_debug_file_already_set_.store( true );
+      tmp_file_path_.store( new std::string( file_path.string() ) ); // Atomic update
+      tmp_file_already_set_.store( true );
       std::cout << "Reassigned: " << file_path << "\n";
 
       return true;
@@ -81,5 +81,4 @@ bool log::debug_tmp_file_reassign_or_cleanup_() {
 }
 
 #endif
-
 }
