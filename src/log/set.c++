@@ -13,9 +13,9 @@ void log::set( const log_settings_t& settings ) {
       {
         std::shared_lock<std::shared_mutex> lock( mtx_ );
         log_t* log_ident = &log_registry_->at( settings.ident );
-        if ( debug_tmp_file_stream_->is_open() ) {
+        if ( internal_debug_->stream_is_open() ) {
 
-          debug_stream_( __FILE__, __LINE__, WARN )
+          internal_debug_->stream( __FILE__, __LINE__, WARN )
             << "log::set() called ⇣" << '\n'
             << std::format( "  log_registry_ has -> [ {} ]", log_ident->settings.ident ) << '\n'
             << std::format( "  log with ident -> [ {} ]", log_ident->settings.ident ) << '\n'
@@ -40,9 +40,8 @@ void log::set( const log_settings_t& settings ) {
 #if DEBUG_LOG
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock<std::shared_mutex> lock( mtx_ );
-      debug_file_is_active_();
-
-      debug_stream_( __FILE__, __LINE__, INFO )
+      internal_debug_->file_is_active();
+      internal_debug_->stream( __FILE__, __LINE__, INFO )
         << "log::set() called ⇣" << '\n'
         << "  set_has_been_called_ ("
         << " was -> [ " << std::boolalpha << previous_set_status << " ]" // previous
@@ -57,7 +56,8 @@ void log::set( const log_settings_t& settings ) {
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock<std::shared_mutex> lock( mtx_ );
-        debug_stream_( __FILE__, __LINE__, WARN ) << "log::set called ⇣" << '\n'
+        internal_debug_->file_is_active();
+        internal_debug_->stream( __FILE__, __LINE__, WARN ) << "log::set called ⇣" << '\n'
                                                  << "  log system is not active. " << '\n'
                                                  << "  use `log::activate()` to activate the log system." << std::endl;
       }
@@ -75,7 +75,7 @@ void log::set( const log_settings_t& settings ) {
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock lock( mtx_ );
         log_address = reinterpret_cast<uintptr_t>( &log_ );
-        debug_stream_( __FILE__, __LINE__, INFO )
+        internal_debug_->stream( __FILE__, __LINE__, INFO )
           << "log_ is nullptr, construct..." << '\n'
           << std::format( "pointer with address -> 0x{:x}", log_address ) << std::endl;
       }
@@ -94,7 +94,7 @@ void log::set( const log_settings_t& settings ) {
 #if DEBUG_LOG
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
-      debug_stream_( __FILE__, __LINE__, INFO )
+      internal_debug_->stream( __FILE__, __LINE__, INFO )
         << "log_ is being destroyed..." << '\n'
         << std::format( "pointer with address -> 0x{:x}", log_address ) << std::endl;
     }
@@ -108,7 +108,7 @@ void log::set( const log_settings_t& settings ) {
 #if DEBUG_LOG
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock lock( mtx_ );
-        debug_stream_( __FILE__, __LINE__, INFO )
+        internal_debug_->stream( __FILE__, __LINE__, INFO )
           << "log custom directory is not set. " << '\n'
           << "  using default directory: " << nutsloop_logs_directory << '\n'
           << "  use `log::set( ident, settings )` to set a custom directory." << std::endl;
