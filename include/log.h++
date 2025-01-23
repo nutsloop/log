@@ -6,7 +6,6 @@
 #include <atomic>
 #include <shared_mutex>
 
-
 // MARK: (LOG) experimental instance class pre-processor
 #ifndef EXPERIMENTAL_INSTANCE
 // HINT: default value if not defined elsewhere
@@ -155,12 +154,12 @@ public:
    * @param ident The unique identifier of the log to use.
    * @param file The name of the source file where the log is recorded.
    * @param line The line number in the source file where the log is recorded.
-   * @param level The log level (e.g., INFO, DEBUG, ERROR, NONE) for the log entry.
+   * @param c The log level (e.g., INFO, DEBUG, ERROR, NONE) for the log entry.
    *              Defaults to INFO if not specified.
    * @return A reference to the logging output stream if successful, or a null stream
    * if conditions do not permit logging.
    */
-  static std::ostream& stream( const char* ident, const char* file, int line, Level level = INFO );
+  static std::ostream& stream( const char* ident, const char* file, int line, Level c = INFO );
   static std::ostream& stream( const char* ident );
 
   /**
