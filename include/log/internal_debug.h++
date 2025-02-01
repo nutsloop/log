@@ -11,8 +11,6 @@
 
 #warning "DEBUG_LOG is enabled"
 
-#include <internal_debug.h++>
-
 constexpr bool DEBUG = true;
 
 #define LOG log::stream( "log", __FILE__, __LINE__, nutsloop::Level::INFO )
@@ -32,7 +30,7 @@ constexpr bool DEBUG = false;
 
 #endif
 
-#include "types.h++"
+#include "../types.h++"
 
 #include <atomic>
 #include <fstream>

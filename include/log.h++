@@ -1,7 +1,7 @@
 #pragma once
-#include "internal_debug.h++"
+#include "log/internal_debug.h++"
 
-#include <types.h++>
+#include "types.h++"
 
 #include <atomic>
 #include <shared_mutex>
@@ -16,7 +16,7 @@
 
 #warning "EXPERIMENTAL_INSTANCE is enabled"
 
-#include "instance.h++"
+#include "log/instance.h++"
 #endif
 
 constexpr size_t LOG_MAX_SIZE = 10 * 1024 * 1024;
