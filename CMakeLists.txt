@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.30)
 project(log)
 
-set(CMAKE_MESSAGE_LOG_LEVEL STATUS)
-
 # Define an option to toggle between static and shared libraries
 option(BUILD_SHARED_LIBS "Build a shared library" OFF)
 option(BUILD_MAIN_EXE "Build the main executable include in the repository for testing purpose" OFF)
@@ -36,7 +34,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 # Optimization flags
 set(OPT_FLAGS "-O3 -march=native -flto")
 set(DEBUG_FLAGS "-g -O0 -fno-omit-frame-pointer -DEXPERIMENTAL_INSTANCE=true")
-set(RELEASE_FLAGS "${OPT_FLAGS} -DNDEBUG -DDEBUG_LOG=false")
+set(RELEASE_FLAGS "${OPT_FLAGS} -DNDEBUG -DDEBUG_LOG=false -DEXPERIMENTAL_INSTANCE=false")
 set(RELWITHDEBINFO_FLAGS "${OPT_FLAGS} -g -DNDEBUG")
 set(EXTRA_FLAGS "-fexperimental-library")
 
