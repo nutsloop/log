@@ -106,6 +106,9 @@ int main() {
     }
   });
 
+  std::this_thread::sleep_for( std::chrono::seconds( 10 ) ); // Sleep for 10 seconds
+  running = false;
+
   // Wait for the threads to finish
   start_and_stop_stream_log.join();
   random_stream_thread.join();
