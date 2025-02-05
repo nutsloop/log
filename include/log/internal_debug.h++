@@ -46,7 +46,13 @@ class internal_debug {
 
 public:
   internal_debug() = default;
-  ~internal_debug() = default;
+  ~internal_debug() {
+    if ( tmp_file_stream_ != nullptr ) {
+      tmp_file_stream_->close();
+      tmp_file_stream_->open( *tmp_file_path_.load(), std::ofstream::trunc );
+      tmp_file_stream_->close();
+    }
+  };
 
   void file_is_active();
   std::ofstream& stream( const char* file, int line_number = 0, Level c = INFO ) const;
