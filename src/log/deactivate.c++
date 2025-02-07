@@ -1,9 +1,15 @@
 #include "log.h++"
 
+#include <iostream>
+
 namespace nutsloop {
 
 void log::deactivate() {
 
+  if (!is_set_called_()) {
+    std::cerr << "log::activate() called before log::set()!" << std::endl;
+    exit( 1 );
+  }
   const bool previous_activate_status = activated_.exchange( false );
   if ( DEBUG ) {
 #if DEBUG_LOG

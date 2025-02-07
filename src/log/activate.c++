@@ -1,19 +1,21 @@
+#include <iostream>
+
 #include "log.h++"
 
 namespace nutsloop {
 
 void log::activate() {
 
+  if (!is_set_called_()) {
+    std::cerr << "log::activate() called before log::set()!" << std::endl;
+    exit( 1 );
+  }
   const bool previous_activate_status = activated_.exchange( true );
   if ( DEBUG ) {
 #if DEBUG_LOG
     {
       // MARK (LOG) MUTEX LOCK
       std::shared_lock lock{ mtx_ };
-      if ( internal_debug_ == nullptr ) {
-        internal_debug_ = std::make_unique<nlog::internal_debug>();
-      }
-      internal_debug_->file_is_active();
       internal_debug_->stream( __FILE__, __LINE__, INFO ) << "log::activate() called ⇣" << '\n'
         << "  activated_ ( "
         << " was -> [ " << std::boolalpha << previous_activate_status << " ]" // previous

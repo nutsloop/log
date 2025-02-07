@@ -6,6 +6,35 @@ namespace nutsloop {
 
 void log::set( const log_settings_t& settings ) {
 
+  if ( DEBUG ) {
+#if DEBUG_LOG
+    {
+      // MARK (LOG) MUTEX LOCK
+      std::shared_lock lock( mtx_ );
+      // activating internal debug logging system.
+      if ( internal_debug_ == nullptr ) {
+        internal_debug_ = std::make_unique<nlog::internal_debug>();
+        internal_debug_->file_is_active();
+      }
+    }
+#endif
+  }
+
+  if ( log_registry_ == nullptr ) {
+    log_registry_ = std::make_unique<log_registry_t>();
+
+    if ( DEBUG ) {
+#if DEBUG_LOG
+      {
+        std::shared_lock lock{ mtx_ };
+        const auto log_registry_address = reinterpret_cast<uintptr_t>(&log_registry_);
+        internal_debug_->stream( __FILE__, __LINE__, INFO ) << "log_registry_ is nullptr, creating..." << '\n'
+          << std::format("pointer with address -> 0x{:x}", log_registry_address) << std::endl;
+      }
+#endif
+    }
+  }
+
   if ( log_registry_ != nullptr && log_registry_->contains( settings.ident ) ) {
 
     if ( DEBUG ) {
@@ -48,22 +77,6 @@ void log::set( const log_settings_t& settings ) {
         << " => now[ " << std::boolalpha << set_has_been_called_ << " ] )" << std::endl; // actual
     }
 #endif
-  }
-
-  if ( !is_activated_() ) {
-
-    if ( DEBUG ) {
-#if DEBUG_LOG
-      { // MARK (LOG) MUTEX LOCK
-        std::shared_lock<std::shared_mutex> lock( mtx_ );
-        internal_debug_->file_is_active();
-        internal_debug_->stream( __FILE__, __LINE__, WARN ) << "log::set called ⇣" << '\n'
-                                                 << "  log system is not active. " << '\n'
-                                                 << "  use `log::activate()` to activate the log system." << std::endl;
-      }
-#endif
-    }
-    return;
   }
 
   uintptr_t log_address;
