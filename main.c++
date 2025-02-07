@@ -20,8 +20,6 @@ void signal_handler( const int signal ) {
 // it is not meant to be compiled or run directly
 int main() {
 
-  log::activate();
-
   const nutsloop::log_settings_t llog_settings(
     "log",
     "log.log",
@@ -30,6 +28,7 @@ int main() {
     std::nullopt
   );
   log::set( llog_settings );
+  log::activate();
 
   const auto llog_instance = log::get_instance( llog_settings.ident );
   log::stream( "log", "", *"", nutsloop::Level::WARN ) << '\n'
