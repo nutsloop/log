@@ -14,7 +14,7 @@ namespace nutsloop::nlog {
       *tmp_file_stream_
         << generate_new_session_header_()
         << "[INFO] [" << shortened_path( __FILE__ ) << ':' << __LINE__ << "] "
-        << "log::file_is_active() called  ⇣" << '\n'
+        << "internal_debug::file_is_active() called  ⇣" << '\n'
         << "  tmp_file_already_set_ was -> [ false ] now => [ true ]" << '\n'
         << "  tmp_file_stream_ -> [ false ] => [ true ]" << std::endl;
 
@@ -26,7 +26,7 @@ namespace nutsloop::nlog {
       *tmp_file_stream_
         << generate_new_session_header_()
         << "[INFO] [" << shortened_path( __FILE__ ) << ':' << __LINE__ << "] "
-        << "log::file_is_active() called  ⇣" << '\n'
+        << "internal_debug::file_is_active() called  ⇣" << '\n'
         << "  tmp_file_already_set_ was -> [ true ] now => [ true ]" << '\n'
         << "  tmp_file_stream_ -> [ false ] => [ true ]" << std::endl;
 
@@ -36,7 +36,7 @@ namespace nutsloop::nlog {
     if ( tmp_file_already_set_.load() == true && tmp_file_stream_ != nullptr && tmp_file_stream_->is_open() ) {
       *tmp_file_stream_
         << "[INFO] [" << shortened_path( __FILE__ ) << ':' << __LINE__ << "] "
-        << "log::file_is_active() called  ⇣" << '\n'
+        << "internal_debug::file_is_active() called  ⇣" << '\n'
         << "  tmp_file_already_set_ was -> [ true ] now => [ true ]" << '\n'
         << "  tmp_file_stream_->is_open() -> [ true ]" << std::endl;
     }
