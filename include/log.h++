@@ -2,6 +2,7 @@
 #include "log/internal_debug.h++"
 
 #include "types.h++"
+#include "util/level.h++"
 
 #include <atomic>
 #include <shared_mutex>
