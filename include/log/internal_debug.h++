@@ -18,6 +18,7 @@ constexpr bool DEBUG = false;
 constexpr bool DEBUG = true;
 
 #include "../types.h++"
+#include "../util/level.h++"
 
 #include <atomic>
 #include <fstream>
