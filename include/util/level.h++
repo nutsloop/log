@@ -1,21 +1,22 @@
 #pragma once
 
-#include "types.h++"
+namespace nutsloop {
 
-using namespace nutsloop::nlog::types;
+enum Level { INFO, WARN, ERROR, NONE };
 
-inline const char* level( const Level level ) {
+inline const char *level(const Level level) {
 
-  switch ( level ) {
+  switch (level) {
   case INFO:
     return "INFO";
   case WARN:
     return "WARN";
   case ERROR:
     return "ERROR";
-  case  NONE:
+  case NONE:
     return "";
   }
 
   return "UNKNOWN";
 }
+} // namespace nutsloop
