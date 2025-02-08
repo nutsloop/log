@@ -65,27 +65,27 @@ int main() {
   std::signal( SIGINT, signal_handler );
 
   // Create and start a thread
-  std::thread random_stream_thread( []() {
+  std::thread random_stream_thread( [ &llog_instance]() {
     std::random_device rd; // Seed for random number generator
     std::mt19937 gen( rd() ); // Standard mersenne_twister_engine
     std::uniform_int_distribution<> dis( 1, 100 ); // Uniform distribution [1, 100]
 
     while ( running ) {
       const int random_number = dis( gen );
-      LOG << "Random Number: " << random_number << '\n';
+      llog_instance->ostream() << "Random Number: " << random_number << '\n';
       std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) ); // Sleep for 2 seconds
     }
   } );
 
   log::deactivate();
 
-  LOG << "Goodbye World!" << '\n';
+  llog_instance->ostream() << "Goodbye World!" << '\n';
 
   std::this_thread::sleep_for( std::chrono::seconds( 1 ) ); // Sleep for 1 second
 
   log::activate();
 
-  LOG << "Hello World! again" << '\n';
+  llog_instance->ostream()<< "Hello World! again" << '\n';
 
   std::this_thread::sleep_for( std::chrono::seconds( 1 ) ); // Sleep for 1 second
 
@@ -94,7 +94,7 @@ int main() {
   std::this_thread::sleep_for( std::chrono::seconds( 10 ) ); // Sleep for 10 seconds
   log::activate();
 
-  std::thread start_and_stop_stream_log( []() {
+  std::thread start_and_stop_stream_log( [&llog_instance]() {
 
     const nutsloop::log_settings_t start_stop_log(
       "start_stop",
@@ -105,17 +105,17 @@ int main() {
     );
     log::set( start_stop_log );
     log::stop( "start_stop" );
-    LOG << "start_stop set to running false" << '\n';
+    llog_instance->ostream() << "start_stop set to running false" << '\n';
 
     while ( running ) {
 
-      LOG << "trying to log to NOT running START_STOP log" << '\n';
+      llog_instance->ostream() << "trying to log to NOT running START_STOP log" << '\n';
       log::stream( "start_stop" ) << "Hello World! NOT RUNNING" << '\n';
-      LOG << "start_stop set to running true" << '\n';
+      llog_instance->ostream() << "start_stop set to running true" << '\n';
       log::start( "start_stop" );
-      LOG << "trying to log to running START_STOP log" << '\n';
+      llog_instance->ostream() << "trying to log to running START_STOP log" << '\n';
       log::stream( "start_stop" ) << "Hello World! RUNNING" << '\n';
-      LOG << "start_stop set to running false" << '\n';
+      llog_instance->ostream() << "start_stop set to running false" << '\n';
       log::stop( "start_stop" );
 
       std::this_thread::sleep_for( std::chrono::milliseconds(500) ); // Sleep for 3 seconds
