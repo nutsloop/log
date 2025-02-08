@@ -67,12 +67,5 @@ struct log_t {
   bool running;
 };
 
-enum Level {
-  INFO,
-  WARN,
-  ERROR,
-  NONE
-};
-
 using log_registry_t = std::unordered_map<std::string, log_t>;
 }
