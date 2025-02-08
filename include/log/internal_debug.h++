@@ -11,22 +11,11 @@
 
 constexpr bool DEBUG = false;
 
-// Mock macros to provide `<<` compatibility
-#include <sstream>
-
-#define LOG std::ostream(nullptr) // No-op stream
-#define LOG_WARN std::ostream(nullptr) // No-op stream
-#define LOG_ERROR std::ostream(nullptr) // No-op stream
-
 #else
 
 #warning "DEBUG_LOG is enabled"
 
 constexpr bool DEBUG = true;
-
-#define LOG log::stream( "log", __FILE__, __LINE__, nutsloop::Level::INFO )
-#define LOG_WARN log::stream( "log", __FILE__, __LINE__, nutsloop::Level::WARN )
-#define LOG_ERROR log::stream( "log", __FILE__, __LINE__, nutsloop::Level::ERROR )
 
 #include "../types.h++"
 
