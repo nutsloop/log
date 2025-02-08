@@ -51,7 +51,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
 # Optional: Add SO versioning for shared libraries
 if (BUILD_SHARED_LIBS)
   set_target_properties(${PROJECT_NAME} PROPERTIES
-    VERSION 0.0.1
+    VERSION 0.0.2
     SOVERSION 0
   )
 endif ()
