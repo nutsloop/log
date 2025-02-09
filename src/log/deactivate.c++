@@ -15,7 +15,6 @@ void log::deactivate() {
 #if DEBUG_LOG == true
   { // MARK (LOG) MUTEX LOCK
     std::unique_lock lock(mtx_);
-    internal_debug_->file_is_active();
     internal_debug_->stream(__FILE__, __LINE__, INFO)
         << "log::deactivate() called ⇣" << '\n'
         << "  activated_ ("
