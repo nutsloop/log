@@ -8,7 +8,6 @@
 
 #if DEBUG_LOG == false
 // Mock macros to provide `<<` compatibility
-#include <sstream>
 
 #define LOG std::ostream(nullptr) // No-op stream
 #define LOG_WARN std::ostream(nullptr) // No-op stream
