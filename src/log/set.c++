@@ -13,7 +13,6 @@ void log::set(const log_settings_t &settings) {
   set_internal_debug_();
 #endif
 
-  // ONGOING: internal debug logging system.
   // GOOD: internal debug logging system.
 
   if (log_registry_ == nullptr) {
