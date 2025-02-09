@@ -2,7 +2,6 @@
 
 namespace nutsloop::nlog {
 
-#if DEBUG_LOG
 #if DEBUG_LOG == true
 
 internal_debug::~internal_debug() {
