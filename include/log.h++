@@ -184,6 +184,7 @@ private:
 #if DEBUG_LOG == true
   // MARK: (LOG) private static log debug info file methods and fields
   static std::unique_ptr<nlog::internal_debug> internal_debug_;
+  static void set_internal_debug_();
 #endif
 
   // MARK: (LOG) private static methods and fields
