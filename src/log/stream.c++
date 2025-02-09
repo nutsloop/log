@@ -7,8 +7,7 @@ namespace nutsloop {
 
 std::ostream& log::stream( const char* ident, const char* file, const int line, const Level c /*= INFO*/ ) {
 
-  if ( DEBUG ) {
-#if DEBUG_LOG
+#if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
       internal_debug_->file_is_active();
@@ -16,7 +15,6 @@ std::ostream& log::stream( const char* ident, const char* file, const int line, 
       internal_debug_->stream( __FILE__, __LINE__, INFO ) << log_stream_signature << std::endl;
     }
 #endif
-  }
 
   const std::optional<log_t*> null_stream = null_stream_( ident );
   log_t* log_ident = nullptr;
@@ -38,8 +36,7 @@ std::ostream& log::stream( const char* ident, const char* file, const int line, 
 
 std::ostream& log::stream( const char* ident ) {
 
-  if ( DEBUG ) {
-#if DEBUG_LOG
+#if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
       internal_debug_->file_is_active();
@@ -47,7 +44,6 @@ std::ostream& log::stream( const char* ident ) {
       internal_debug_->stream( __FILE__, __LINE__, INFO ) << "log::stream() called ⇣" << std::endl;
     }
 #endif
-  }
 
   if ( const std::optional<log_t*> null_stream = null_stream_( ident ) ) return null_stream.value()->stream;
 

@@ -4,8 +4,7 @@ namespace nutsloop {
 
 void log::stop( const std::string& ident ) {
 
-  if ( DEBUG ) {
-#if DEBUG_LOG
+#if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
       internal_debug_->file_is_active();
@@ -13,11 +12,10 @@ void log::stop( const std::string& ident ) {
         << std::format( "log::stop([{}]) called ⇣", ident ) << '\n';
     }
 #endif
-  }
 
   if ( ! log_registry_->contains( ident ) ) {
-    if ( DEBUG ) {
-#if DEBUG_LOG
+
+#if DEBUG_LOG == true
       { // MARK (LOG) MUTEX LOCK
         std::shared_lock lock( mtx_ );
         internal_debug_->stream( __FILE__, __LINE__, ERROR )
@@ -25,7 +23,6 @@ void log::stop( const std::string& ident ) {
           << std::format( "  log identified with `{}` not found.", ident ) << '\n';
       }
 #endif
-    }
 
     return;
   }
@@ -33,8 +30,8 @@ void log::stop( const std::string& ident ) {
   log_t* log_ident = &log_registry_->at( ident );
   const bool previous_running_status = log_ident->running;
   log_ident->running = false;
-  if ( DEBUG ) {
-#if DEBUG_LOG
+
+#if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
       internal_debug_->stream( __FILE__, __LINE__, INFO )
@@ -44,7 +41,7 @@ void log::stop( const std::string& ident ) {
         << " => now[ " << std::boolalpha << log_ident->running << " ] )" << std::endl; // actual
     }
 #endif
-  }
+
 }
 
 }
