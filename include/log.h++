@@ -181,7 +181,7 @@ public:
   static void deactivate_stream_redirect();
 private:
 
-#if DEBUG_LOG
+#if DEBUG_LOG == true
   // MARK: (LOG) private static log debug info file methods and fields
   static std::unique_ptr<nlog::internal_debug> internal_debug_;
 #endif
