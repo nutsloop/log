@@ -1,19 +1,21 @@
 #include "internal_debug.h++"
 
-#include <datetime.h++>
+#include "../../include/util/datetime.h++"
 
 #include <iostream>
 #include <unistd.h>
 
 namespace nutsloop::nlog {
 
-#if DEBUG_LOG
+#if DEBUG_LOG == true
 
 void internal_debug::tmp_file_create_() {
 
   // first a bit of cleanup or reassign
-  if ( tmp_file_reassign_or_cleanup_() )
+  if ( tmp_file_reassign_or_cleanup_() ) {
+    // if we reassigned, we're done.
     return;
+  }
 
   std::string tmp_path = std::format( "/var/tmp/{}_nutsloop_logXXXXXX", datetime() );
   const int fd = mkstemp( tmp_path.data() ); // Secure and unique
