@@ -7,15 +7,9 @@
 
 #endif
 
-#if DEBUG_LOG == false
-
-constexpr bool DEBUG = false;
-
-#else
+#if DEBUG_LOG == true
 
 #warning "DEBUG_LOG is enabled"
-
-constexpr bool DEBUG = true;
 
 #include "../types.h++"
 #include "../util/level.h++"
