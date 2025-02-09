@@ -25,22 +25,24 @@ using namespace nlog::types;
 class internal_debug {
 
 public:
-  internal_debug() = default;
+  internal_debug();
   ~internal_debug();
-
-  void file_is_active();
-  std::ofstream& stream( const char* file, int line_number = 0, Level c = INFO ) const;
-  bool stream_is_open() const;
+  std::ofstream &stream(const char *file, int line_number = 0,
+                        Level c = INFO) const;
 
 private:
-  std::atomic<bool> tmp_file_already_set_{ false };
-  std::atomic<std::string*> tmp_file_path_{};
-  std::unique_ptr<std::ofstream> tmp_file_stream_{ nullptr };
+  std::atomic<bool> tmp_file_already_set_{false};
+  std::atomic<std::string *> tmp_file_path_{};
+  std::unique_ptr<std::ofstream> tmp_file_stream_{nullptr};
+
+  void activate_();
   [[nodiscard]] bool tmp_file_reassign_or_cleanup_();
   [[nodiscard]] std::string generate_new_session_header_() const;
   void tmp_file_create_();
+
+  bool stream_is_open_() const;
 };
 
-}
+} // namespace nutsloop::nlog
 
 #endif
