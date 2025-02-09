@@ -1,8 +1,10 @@
 #pragma once
 #include "log/internal_debug.h++"
 
+#if DEBUG_LOG == false
 #include "types.h++"
 #include "util/level.h++"
+#endif
 
 #include <atomic>
 #include <shared_mutex>
