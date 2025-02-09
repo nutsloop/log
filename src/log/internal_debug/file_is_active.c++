@@ -1,10 +1,10 @@
 #include "internal_debug.h++"
 
-#include <shortened_path.h++>
+#include "../../include/util/shortened_path.h++"
 
 namespace nutsloop::nlog {
 
-#if DEBUG_LOG
+#if DEBUG_LOG == true
 
   void internal_debug::file_is_active() {
 
