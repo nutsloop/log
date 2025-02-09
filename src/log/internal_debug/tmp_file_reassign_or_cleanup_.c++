@@ -1,10 +1,10 @@
-#include <iostream>
-
 #include "internal_debug.h++"
+
+#include <iostream>
 
 namespace nutsloop::nlog {
 
-#if DEBUG_LOG
+#if DEBUG_LOG == true
 
 bool internal_debug::tmp_file_reassign_or_cleanup_() {
 
