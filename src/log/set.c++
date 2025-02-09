@@ -6,16 +6,19 @@ namespace nutsloop {
 
 void log::set(const log_settings_t &settings) {
 
+  // ONGOING: internal debug logging system.
+
+  // Initialise an internal debug logging system globally accessible.
 #if DEBUG_LOG == true
   { // MARK (LOG) MUTEX LOCK
     std::shared_lock lock(mtx_);
-    // activating internal debug logging system.
     if (internal_debug_ == nullptr) {
       internal_debug_ = std::make_unique<nlog::internal_debug>();
-      internal_debug_->file_is_active();
     }
   }
 #endif
+
+  // ONGOING: internal debug logging system.
 
   if (log_registry_ == nullptr) {
     log_registry_ = std::make_unique<log_registry_t>();
@@ -33,36 +36,36 @@ void log::set(const log_settings_t &settings) {
 #endif
   }
 
+  const bool previous_set_status = set_has_been_called_.exchange(true);
+
   if (log_registry_ != nullptr && log_registry_->contains(settings.ident)) {
 
 #if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock<std::shared_mutex> lock(mtx_);
       log_t *log_ident = &log_registry_->at(settings.ident);
-      if (internal_debug_->stream_is_open()) {
 
-        internal_debug_->stream(__FILE__, __LINE__, WARN)
-            << "log::set() called ⇣" << '\n'
-            << std::format("  log_registry_ has -> [ {} ]",
-                           log_ident->settings.ident)
-            << '\n'
-            << std::format("  log with ident -> [ {} ]",
-                           log_ident->settings.ident)
-            << '\n'
-            << std::format("    is_active -> [ {} ]",
-                           log_ident->settings.active ? "true" : "false")
-            << '\n'
-            << std::format("    is_running -> [ {} ]",
-                           log_ident->running ? "true" : "false")
-            << '\n'
-            << std::format("  use: `log::start( '{}' )` | `log::stop( '{}' )`",
-                           settings.ident, settings.ident)
-            << '\n'
-            << std::format(
-                   "  to change the running state for log with ident -> `{}`.",
-                   settings.ident)
-            << std::endl;
-      }
+      internal_debug_->stream(__FILE__, __LINE__, WARN)
+          << "log::set() called ⇣" << '\n'
+          << std::format("  log_registry_ has -> [ {} ]",
+                         log_ident->settings.ident)
+          << '\n'
+          << std::format("  log with ident -> [ {} ]",
+                         log_ident->settings.ident)
+          << '\n'
+          << std::format("    is_active -> [ {} ]",
+                         log_ident->settings.active ? "true" : "false")
+          << '\n'
+          << std::format("    is_running -> [ {} ]",
+                         log_ident->running ? "true" : "false")
+          << '\n'
+          << std::format("  use: `log::start( '{}' )` | `log::stop( '{}' )`",
+                         settings.ident, settings.ident)
+          << '\n'
+          << std::format(
+                 "  to change the running state for log with ident -> `{}`.",
+                 settings.ident)
+          << std::endl;
     }
 #endif
 
@@ -73,12 +76,9 @@ void log::set(const log_settings_t &settings) {
   if (is_set_called_()) {
   }
 
-  const bool previous_set_status = set_has_been_called_.exchange(true);
-
 #if DEBUG_LOG == true
   { // MARK (LOG) MUTEX LOCK
-    std::shared_lock<std::shared_mutex> lock(mtx_);
-    internal_debug_->file_is_active();
+    std::shared_lock lock(mtx_);
     internal_debug_->stream(__FILE__, __LINE__, INFO)
         << "log::set() called ⇣" << '\n'
         << "  set_has_been_called_ ("
