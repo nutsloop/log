@@ -2,7 +2,7 @@
 
 namespace nutsloop::nlog {
 
-#if DEBUG_LOG
+#if DEBUG_LOG == true
 
 bool internal_debug::stream_is_open() const {
 
