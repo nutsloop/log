@@ -2,7 +2,7 @@
 
 namespace nutsloop {
 
-#if DEBUG_LOG
+#if DEBUG_LOG == true
 std::unique_ptr<nlog::internal_debug> log::internal_debug_{nullptr};
 #endif
 
