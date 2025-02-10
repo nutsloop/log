@@ -29,6 +29,7 @@ public:
   ~internal_debug();
   std::ofstream &stream(const char *file, int line_number = 0,
                         Level c = INFO) const;
+  std::ofstream &stream() const;
 
 private:
   std::atomic<bool> tmp_file_already_set_{false};
