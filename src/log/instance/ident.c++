@@ -3,7 +3,7 @@
 namespace nutsloop::nlog {
 
 std::string instance::ident() const {
-  return log_->settings.ident;
+  return log_->settings.get_ident();
 }
 
 }
