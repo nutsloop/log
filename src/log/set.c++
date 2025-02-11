@@ -1,10 +1,11 @@
 #include "log.h++"
 
 #include <iostream>
+#include <uintptr.h++>
 
 namespace nutsloop {
 
-void log::set(const log_settings_t &settings) {
+void log::set(log_settings_t &settings) {
 
   // GOOD internal debug logging system.
 
@@ -15,121 +16,32 @@ void log::set(const log_settings_t &settings) {
 
   // GOOD: internal debug logging system.
 
-  if (log_registry_ == nullptr) {
-    log_registry_ = std::make_unique<log_registry_t>();
+  // this method has been called so it is possible to call all the public
+  // methods this method can be called again to set other logs.
+  set_called_();
 
-#if DEBUG_LOG == true
-    { // MARK (LOG) MUTEX LOCK
-      std::shared_lock lock{mtx_};
-      const auto log_registry_address =
-          reinterpret_cast<uintptr_t>(&log_registry_);
-      internal_debug_->stream(__FILE__, __LINE__, INFO)
-          << "log_registry_ is nullptr, creating..." << '\n'
-          << std::format("pointer with address -> 0x{:x}", log_registry_address)
-          << std::endl;
-    }
-#endif
-  }
+  // ONGOING: setting up the registry
 
-  const bool previous_set_status = set_has_been_called_.exchange(true);
+  set_log_registry_();
 
-  if (log_registry_ != nullptr && log_registry_->contains(settings.ident)) {
-
-#if DEBUG_LOG == true
-    { // MARK (LOG) MUTEX LOCK
-      std::shared_lock<std::shared_mutex> lock(mtx_);
-      log_t *log_ident = &log_registry_->at(settings.ident);
-
-      internal_debug_->stream(__FILE__, __LINE__, WARN)
-          << "log::set() called ⇣" << '\n'
-          << std::format("  log_registry_ has -> [ {} ]",
-                         log_ident->settings.ident)
-          << '\n'
-          << std::format("  log with ident -> [ {} ]",
-                         log_ident->settings.ident)
-          << '\n'
-          << std::format("    is_active -> [ {} ]",
-                         log_ident->settings.active ? "true" : "false")
-          << '\n'
-          << std::format("    is_running -> [ {} ]",
-                         log_ident->running ? "true" : "false")
-          << '\n'
-          << std::format("  use: `log::start( '{}' )` | `log::stop( '{}' )`",
-                         settings.ident, settings.ident)
-          << '\n'
-          << std::format(
-                 "  to change the running state for log with ident -> `{}`.",
-                 settings.ident)
-          << std::endl;
-    }
-#endif
-
+  if (registry_has_item_(settings.get_ident())) {
     return;
   }
 
-  // HINT: maybe find a purpose for this? :D
-  if (is_set_called_()) {
-  }
+  // ONGOING: setting up the registry
 
-#if DEBUG_LOG == true
-  { // MARK (LOG) MUTEX LOCK
-    std::shared_lock lock(mtx_);
-    internal_debug_->stream(__FILE__, __LINE__, INFO)
-        << "log::set() called ⇣" << '\n'
-        << "  set_has_been_called_ ("
-        << " was -> [ " << std::boolalpha << previous_set_status
-        << " ]" // previous
-        << " => now[ " << std::boolalpha << set_has_been_called_ << " ] )"
-        << std::endl; // actual
-  }
-#endif
+  // ONGOING: setting up the log
 
-  uintptr_t log_address;
-  if (log_ == nullptr) {
+  log_t* log_ident = set_log_( &settings );
 
-    log_ = std::make_unique<log_t>();
-
-#if DEBUG_LOG == true
-    { // MARK (LOG) MUTEX LOCK
-      std::shared_lock lock(mtx_);
-      log_address = reinterpret_cast<uintptr_t>(&log_);
-      internal_debug_->stream(__FILE__, __LINE__, INFO)
-          << "log_ is nullptr, construct..." << '\n'
-          << std::format("pointer with address -> 0x{:x}", log_address)
-          << std::endl;
-    }
-#endif
-  }
-
-  log_->settings = settings;
-  log_->stream = std::ofstream();
-  log_->running = settings.active;
-
-  log_registry_->insert_or_assign(settings.ident, std::move(*log_));
-
-  log_.reset();
-
-#if DEBUG_LOG == true
-  { // MARK (LOG) MUTEX LOCK
-    std::shared_lock lock(mtx_);
-    internal_debug_->stream(__FILE__, __LINE__, INFO)
-        << "log_ is being destroyed..." << '\n'
-        << std::format("pointer with address -> 0x{:x}", log_address)
-        << std::endl;
-  }
-#endif
-
-  log_t *log_ident = &log_registry_->at(settings.ident);
-
-  if (!log_ident->settings.directory) {
+  if (!log_ident->settings.get_directory()) {
 
 #if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock(mtx_);
       internal_debug_->stream(__FILE__, __LINE__, INFO)
           << "log custom directory is not set. " << '\n'
-          << "  using default directory: " << nutsloop_logs_directory << '\n'
-          << "  use `log::set( ident, settings )` to set a custom directory."
+          << "  using default directory: " << nutsloop_logs_directory
           << std::endl;
     }
 #endif
@@ -144,11 +56,11 @@ void log::set(const log_settings_t &settings) {
 
   bool renamed = false;
   const std::filesystem::path log_file_path =
-      nutsloop_logs_directory / log_ident->settings.filename;
+      nutsloop_logs_directory / log_ident->settings.get_filename();
   if (std::filesystem::exists(log_file_path) &&
       std::filesystem::file_size(log_file_path) > LOG_MAX_SIZE) {
     const std::string backup_path =
-        nutsloop_logs_directory / (log_ident->settings.filename + ".backup");
+        nutsloop_logs_directory / (log_ident->settings.get_filename() + ".backup");
     if (log_ident->stream.is_open()) {
       log_ident->stream.close();
     }
@@ -171,14 +83,16 @@ void log::set(const log_settings_t &settings) {
   log_ident->stream << std::unitbuf;
 
   // Add the default session header if the custom one has not been set.
-  if (!log_ident->settings.session_header) {
+  if (!log_ident->settings.get_session_header()) {
     log_ident->stream << generate_new_session_header_(
-        log_ident->settings.ident,
+        log_ident->settings.get_ident(),
         log_file_path); // Add session header
   }
   // TODO: handle custom log header
   else {
   }
+
+  // ONGOING: setting up the log
 }
 
 } // namespace nutsloop
