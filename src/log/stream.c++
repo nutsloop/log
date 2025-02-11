@@ -10,7 +10,7 @@ std::ostream& log::stream( const char* ident, const char* file, const int line, 
 #if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
-      const std::string log_stream_signature = std::format("log::stream( ident[{}], file[{}], line[{}], level[{}] ) called ⇣", ident, file, line, level(  c ) );
+      const std::string log_stream_signature = std::format("log::stream( ident_[{}], file[{}], line[{}], level[{}] ) called ⇣", ident, file, line, level(  c ) );
       internal_debug_->stream( __FILE__, __LINE__, INFO ) << log_stream_signature << std::endl;
     }
 #endif
@@ -38,7 +38,7 @@ std::ostream& log::stream( const char* ident ) {
 #if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock( mtx_ );
-      const std::string log_stream_signature = std::format("log::stream( ident[{}] ) called ⇣", ident );
+      const std::string log_stream_signature = std::format("log::stream( ident_[{}] ) called ⇣", ident );
       internal_debug_->stream( __FILE__, __LINE__, INFO ) << "log::stream() called ⇣" << std::endl;
     }
 #endif
