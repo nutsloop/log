@@ -2,6 +2,8 @@
 
 namespace nutsloop {
 
+#if DEBUG_LOG == true
+
 void log::set_internal_debug_() {
   { // MARK (LOG) MUTEX LOCK
     std::shared_lock lock(mtx_);
@@ -10,5 +12,7 @@ void log::set_internal_debug_() {
     }
   }
 }
+
+#endif
 
 }
