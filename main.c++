@@ -36,7 +36,7 @@ void signal_handler( const int signal ) {
 // it is not meant to be compiled or run directly
 int main() {
 
-  const nutsloop::log_settings_t llog_settings(
+  nutsloop::log_settings_t llog_settings(
     "log",
     "log.log",
     true,
@@ -46,7 +46,7 @@ int main() {
   log::set( llog_settings );
   log::activate();
 
-  const auto llog_instance = log::get_instance( llog_settings.ident );
+  const auto llog_instance = log::get_instance( llog_settings.get_ident() );
   log::stream( "log", "", *"", nutsloop::Level::WARN ) << '\n'
     << llog_instance->ident() << '\n';
   llog_instance->ostream() << "llog_ostream >> Hello World!" << '\n';
@@ -56,6 +56,10 @@ int main() {
   std::cerr << "std::cerr >> Hello World!" << '\n';
 
   LOG << "Hello World!" << '\n';
+
+  // Set the log settings again to test the log::set() function
+  // the internal_debug should show a WARN log message.
+  log::set(llog_settings);
 
   log::stream( "log" ) << "Hello World!" << '\n';
   log::stream( "log", "", *"", nutsloop::Level::NONE ) << "Hello World!" << '\n';
@@ -95,7 +99,7 @@ int main() {
 
   std::thread start_and_stop_stream_log( [&llog_instance]() {
 
-    const nutsloop::log_settings_t start_stop_log(
+    nutsloop::log_settings_t start_stop_log(
       "start_stop",
       "start_stop.log",
       true,
