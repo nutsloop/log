@@ -10,6 +10,8 @@ void log::set(log_settings_t &settings) {
   // GOOD internal debug logging system.
 
   // Initialise an internal debug logging system globally accessible.
+  // This comes first so that if the internal debug logging system is
+  // initialised.
 #if DEBUG_LOG == true
   set_internal_debug_();
 #endif
