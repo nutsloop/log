@@ -7,7 +7,8 @@
 
 namespace nutsloop::nlog::types {
 
-const std::filesystem::path nutsloop_dir = std::filesystem::path(std::getenv("HOME")) / ".nutsloop";
+const std::filesystem::path nutsloop_dir =
+    std::filesystem::path(std::getenv("HOME")) / ".nutsloop";
 const std::filesystem::path nutsloop_logs_directory = nutsloop_dir / "logs";
 
 struct log_settings_t {
