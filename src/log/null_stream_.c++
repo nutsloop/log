@@ -25,8 +25,8 @@ std::optional<log_t *> log::null_stream_(const std::string &ident) {
 
   log_t *log_ident = &log_registry_->at(ident);
 
-  // Check if the log is active
-  if (!log_ident->settings.active) {
+  // Check if the log is active_
+  if (!log_ident->settings.get_active()) {
 
 #if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
@@ -34,8 +34,8 @@ std::optional<log_t *> log::null_stream_(const std::string &ident) {
 
       internal_debug_->stream(__FILE__, __LINE__, WARN)
           << std::format("log::null_stream_([{}]) called ⇣", ident) << '\n'
-          << "  log is not active: [ " << std::boolalpha
-          << log_ident->settings.active << " ] " << '\n'
+          << "  log is not active_: [ " << std::boolalpha
+          << log_ident->settings.get_active() << " ] " << '\n'
           << "  returning a null_log_ (empty buffer)" << '\n';
     }
 #endif
