@@ -72,10 +72,16 @@ private:
 };
 
 struct log_t {
+
   log_settings_t settings;
   std::ofstream stream;
-  bool running;
+  bool running{};
+
+  log_t() = default;
+  explicit log_t(log_settings_t settings)
+      : settings{std::move(settings)}, stream{std::ofstream()},
+        running{settings.get_active()} {}
 };
 
 using log_registry_t = std::unordered_map<std::string, log_t>;
-}
+} // namespace nutsloop::nlog::types
