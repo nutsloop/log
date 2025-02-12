@@ -33,7 +33,7 @@ void log::flush(const std::string &ident) {
     if (log_ident->stream.is_open()) {
       log_ident->stream.close();
     }
-    log_ident->stream.open(log_ident->settings.absolute_path(),
+    log_ident->stream.open(log_ident->settings.absolute_path()/log_ident->settings.get_filename(),
                            std::ios::out | std::ios::trunc);
   }
 }
