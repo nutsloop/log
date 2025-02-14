@@ -56,6 +56,8 @@ int main() {
   std::cerr << "std::cerr >> Hello World!" << '\n';
 
   LOG << "Hello World!" << '\n';
+  LOG_WARN << "Hello World!" << '\n';
+  LOG_ERROR << "Hello World!" << '\n';
 
   // Set the log settings again to test the log::set() function
   // the internal_debug should show a WARN log message.
