@@ -34,7 +34,7 @@ void log::set(log_settings_t &settings) {
 
   // ONGOING: setting up the log
 
-  log_t* log_ident = set_log_( &settings );
+  log_t *log_ident = set_log_(&settings);
 
   if (!log_ident->settings.get_directory()) {
 
@@ -43,8 +43,7 @@ void log::set(log_settings_t &settings) {
       std::shared_lock lock(mtx_);
       internal_debug_->stream(__FILE__, __LINE__, INFO)
           << "log custom directory is not set. " << '\n'
-          << "  using default directory: " << nutsloop_logs_directory
-          << std::endl;
+          << "  using default directory: " << nutsloop_logs_directory << std::endl;
     }
 #endif
 
@@ -71,10 +70,8 @@ void log::set(log_settings_t &settings) {
   }
 
   log_ident->stream.open(log_file_path,
-                         std::ios::out |
-                             (renamed ? std::ios::trunc : std::ios::app));
-  std::optional<std::string> log_file_stream_error =
-      error_on_log_file_(log_ident);
+                         std::ios::out | (renamed ? std::ios::trunc : std::ios::app));
+  std::optional<std::string> log_file_stream_error = error_on_log_file_(log_ident);
   if (log_file_stream_error) {
     throw std::runtime_error(*log_file_stream_error);
   }
@@ -86,9 +83,11 @@ void log::set(log_settings_t &settings) {
 
   // Add the default session header if the custom one has not been set.
   if (!log_ident->settings.get_session_header()) {
-    log_ident->stream << generate_new_session_header_(
-        log_ident->settings.get_ident(),
-        log_file_path); // Add session header
+    log_ident->stream << '\n'
+                      << generate_new_session_header_(log_ident->settings.get_ident(),
+                                                      log_file_path) // Add session header
+                      << '\n'
+                      << '\n';
   }
   // TODO: handle custom log header
   else {
