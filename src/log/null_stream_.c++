@@ -44,14 +44,14 @@ std::optional<log_t *> log::null_stream_(const std::string &ident) {
   }
 
   // Check if the log is running
-  if (!log_ident->running) {
+  if (!log_ident->is_running()) {
 
 #if DEBUG_LOG == true
     { // MARK (LOG) MUTEX LOCK
       std::shared_lock lock(mtx_);
       internal_debug_->stream(__FILE__, __LINE__, WARN)
           << std::format("log::null_stream_([{}]) called ⇣", ident) << '\n'
-          << "  log is not running: [ " << std::boolalpha << log_ident->running
+          << "  log is not running: [ " << std::boolalpha << log_ident->is_running()
           << " ] " << '\n'
           << "  returning a null_log_ (empty buffer)" << '\n';
     }
