@@ -23,7 +23,7 @@ bool log::registry_has_item_(std::string ident) {
                          log_ident->settings.get_active() ? "true" : "false")
           << '\n'
           << std::format("    is_running -> [ {} ]",
-                         log_ident->running ? "true" : "false")
+                         log_ident->is_running() ? "true" : "false")
           << '\n'
           << std::format("  use: `log::start( '{}' )` | `log::stop( '{}' )`",
                          ident, ident)
