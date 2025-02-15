@@ -18,7 +18,9 @@ public:
   [[nodiscard]] bool active() const = delete;
   [[nodiscard]] std::optional<std::filesystem::path> directory() const = delete;
   [[nodiscard]] std::optional<std::string> header() const = delete;
-  [[nodiscard]] std::optional<std::filesystem::path> absolute_path() const = delete;
+  [[nodiscard]] std::filesystem::path absolute_path() const {
+    return log_->settings.absolute_path();
+  };
 
   // MARK: (log_instance) log_t
   [[nodiscard]] std::ostream& ostream() const;
