@@ -33,6 +33,7 @@ public:
   void stop() const;
   void flush() const;
   void close() const;
+  [[nodiscard]] bool is_open() const;
 
 private:
   log_t* log_;
