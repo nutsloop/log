@@ -17,13 +17,13 @@ bool log::full_running(const std::string &ident) {
 
   if (log_registry_->contains(ident)) {
     const log_t *log_ident = &log_registry_->at(ident);
-    if (log_ident->running && log_ident->stream.is_open()) {
+    if (log_ident->is_running() && log_ident->stream.is_open()) {
       return true;
     }
-    if (log_ident->running && !log_ident->stream.is_open()) {
+    if (log_ident->is_running() && !log_ident->stream.is_open()) {
       return false;
     }
-    if (!log_ident->running && !log_ident->stream.is_open()) {
+    if (!log_ident->is_running() && !log_ident->stream.is_open()) {
       return false;
     }
   }
