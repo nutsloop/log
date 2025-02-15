@@ -15,16 +15,16 @@ const std::filesystem::path nutsloop_logs_directory = nutsloop_dir / "logs";
 struct log_settings_t {
 
   log_settings_t() = default;
-  log_settings_t(std::string ident_, std::string filename_, const bool active_,
-                 const std::optional<std::filesystem::path> &directory_,
-                 const std::optional<std::string> &session_header_)
-      : ident_{std::move(ident_)}, filename_{std::move(filename_)},
-        active_{active_}, directory_{directory_},
-        session_header_{session_header_} {
+  log_settings_t(std::string ident, std::string filename, const bool active,
+                 const std::optional<std::filesystem::path> &directory,
+                 const std::optional<std::string> &session_header)
+      : ident_{std::move(ident)}, filename_{std::move(filename)},
+        active_{active}, directory_{directory},
+        session_header_{session_header} {
 
-    if (directory_.has_value()) {
+    if (directory.has_value()) {
       determine_directory_absolute_path_();
-      absolute_path_ = directory_.value() / filename_;
+      absolute_path_ = directory.value() / filename_;
     } else {
       absolute_path_ = nutsloop_logs_directory / filename_;
     }
