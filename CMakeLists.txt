@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(log)
 
+option(USE_RELATIVE_PATHS "Use relative paths for libraries and includes" OFF)
 # Define an option to toggle between static and shared libraries
 option(BUILD_SHARED_LIBS "Build a shared library" OFF)
 option(BUILD_MAIN_EXE "Build the main executable include in the repository for testing purpose" OFF)
@@ -9,8 +10,15 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Configure based on the switch
+if(USE_RELATIVE_PATHS)
+  set(ANSI_ROOT_INCLUDE_DIR "../ansi/include")
+else()
+  set(ANSI_ROOT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/deps/ansi/include")
+endif()
+
 # Root include directory
-set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include ${ANSI_ROOT_INCLUDE_DIR})
 
 # Source files
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
