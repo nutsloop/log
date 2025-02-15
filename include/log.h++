@@ -118,6 +118,7 @@ public:
    * not found, no action is performed.
    */
   static void stop(const std::string &ident);
+  static bool is_open(const std::string &ident);
   static void close(const std::string &ident);
   /**
    * Flushes and resets the specified log output stream based on its identifier.
@@ -133,6 +134,8 @@ public:
    * identifier must exist in the log registry for the operation to complete.
    */
   static void flush(const std::string &ident);
+
+  static std::filesystem::path get_absolute_path(const std::string &ident);
 
 #if EXPERIMENTAL_INSTANCE == true
   // MARK: (LOG) experimental instance methods and fields
