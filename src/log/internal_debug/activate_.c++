@@ -1,7 +1,7 @@
-#include "internal_debug.h++"
+#include "log/internal_debug.h++"
 
-#include "shortened_path.h++"
-#include "uintptr.h++"
+#include "util/shortened_path.h++"
+#include "util/uintptr.h++"
 
 namespace nutsloop::nlog {
 

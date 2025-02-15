@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <optional>
+#include <string>
 #include <unordered_map>
 
 namespace nutsloop::nlog::types {

@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace nutsloop::nansi {
+namespace nutsloop {
 class ansi {
 public:
   // MARK (ansi) constructors
@@ -88,7 +88,7 @@ public:
   [[nodiscard]] ansi reset() const { return ansi("\033[0m" + text_ + "\033[0m"); }
 
   // MARK (ansi) operators
-  friend std::ostream &operator<<(std::ostream &os, const ansi &c_str){
+  friend std::ostream &operator<<(std::ostream &os, const ansi &c_str) {
     os << c_str.text_;
     return os;
   }
@@ -109,4 +109,4 @@ private:
 
 inline ansi operator""_(const char *str, std::size_t) { return ansi(std::string_view(str)); }
 
-} // namespace nutsloop::nansi
+} // namespace nutsloop

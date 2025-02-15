@@ -1,7 +1,7 @@
-#include "internal_debug.h++"
+#include "log/internal_debug.h++"
 
-#include "../../include/util/level.h++"
-#include "../../include/util/shortened_path.h++"
+#include "util/level.h++"
+#include "util/shortened_path.h++"
 
 #include <iostream>
 

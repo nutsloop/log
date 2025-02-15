@@ -1,6 +1,6 @@
-#include <iostream>
-
 #include "log.h++"
+
+#include <iostream>
 
 namespace nutsloop {
 

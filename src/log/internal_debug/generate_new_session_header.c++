@@ -1,11 +1,10 @@
-#include "internal_debug.h++"
+#include "log/internal_debug.h++"
 
-#include "../../include/util/datetime.h++"
-#include "../../include/util/shortened_path.h++"
+#include "util/datetime.h++"
+#include "util/shortened_path.h++"
 
 #include "ansi.h++"
 
-using namespace nutsloop::nansi;
 namespace nutsloop::nlog {
 
 #if DEBUG_LOG == true

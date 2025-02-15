@@ -1,6 +1,6 @@
-#include "internal_debug.h++"
+#include "log/internal_debug.h++"
 
-#include "../../include/util/datetime.h++"
+#include "util/datetime.h++"
 
 #include <iostream>
 #include <unistd.h>

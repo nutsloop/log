@@ -1,4 +1,5 @@
-#include "instance.h++"
+#include "log/instance.h++"
+
 #include "log.h++"
 
 namespace nutsloop::nlog {

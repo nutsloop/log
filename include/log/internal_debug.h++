@@ -11,8 +11,8 @@
 
 #warning "DEBUG_LOG is enabled"
 
-#include "../types.h++"
-#include "../util/level.h++"
+#include "types.h++"
+#include "util/level.h++"
 
 #include <atomic>
 #include <fstream>

@@ -1,6 +1,6 @@
 #include "log.h++"
 
-#include <uintptr.h++>
+#include "util/uintptr.h++"
 
 namespace nutsloop {
 

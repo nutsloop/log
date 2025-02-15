@@ -11,18 +11,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Root include directory
 set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
-# Collect all directories (recursively)
-file(GLOB_RECURSE HEADER_DIRS LIST_DIRECTORIES true "${INCLUDE_DIR}/*")
-# Initialize the include directories list with the root
-set(INCLUDE_DIRS ${INCLUDE_DIR})
-# Filter directories explicitly
-foreach (DIR ${HEADER_DIRS})
-  if (IS_DIRECTORY "${DIR}")
-    list(APPEND INCLUDE_DIRS "${DIR}")
-  endif ()
-endforeach ()
-# Remove duplicates (just in case)
-list(REMOVE_DUPLICATES INCLUDE_DIRS)
 
 # Source files
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
@@ -33,7 +21,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Optimization flags
 set(OPT_FLAGS "-O3 -march=native -flto")
-set(DEBUG_FLAGS "-g -O0 -fno-omit-frame-pointer -DEXPERIMENTAL_INSTANCE=true")
+set(DEBUG_FLAGS "-g -O0 -fno-omit-frame-pointer -DDEBUG_LOG=true -DEXPERIMENTAL_INSTANCE=true")
 set(RELEASE_FLAGS "${OPT_FLAGS} -DNDEBUG -DDEBUG_LOG=false -DEXPERIMENTAL_INSTANCE=true")
 set(RELWITHDEBINFO_FLAGS "${OPT_FLAGS} -g -DNDEBUG")
 set(EXTRA_FLAGS "-fexperimental-library")
@@ -46,12 +34,12 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "${RELEASE_FLAGS} -Os ${EXTRA_FLAGS}")
 
 # Add the library
 add_library(${PROJECT_NAME} log.h++ ${SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIR})
 
 # Optional: Add SO versioning for shared libraries
 if (BUILD_SHARED_LIBS)
   set_target_properties(${PROJECT_NAME} PROPERTIES
-    VERSION 0.0.2
+    VERSION 0.0.3
     SOVERSION 0
   )
 endif ()

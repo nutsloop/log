@@ -1,7 +1,7 @@
 #include "log.h++"
 
-#include <level.h++>
-#include <shortened_path.h++>
+#include "util/level.h++"
+#include "util/shortened_path.h++"
 
 namespace nutsloop {
 

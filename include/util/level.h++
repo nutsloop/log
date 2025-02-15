@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ansi.h++"
-using namespace nutsloop::nansi;
 
 namespace nutsloop {
 

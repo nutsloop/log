@@ -1,11 +1,10 @@
 #include "log.h++"
 
-#include "datetime.h++"
-#include "shortened_path.h++"
+#include "util/datetime.h++"
+#include "util/shortened_path.h++"
 
 #include <ansi.h++>
 
-using namespace nutsloop::nansi;
 namespace nutsloop {
 
 std::string log::generate_new_session_header_(const std::string &ident,
