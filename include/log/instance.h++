@@ -30,6 +30,7 @@ public:
   void start() const;
   void stop() const;
   void flush() const;
+  void close() const;
 
 private:
   log_t* log_;
