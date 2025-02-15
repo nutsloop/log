@@ -118,6 +118,7 @@ public:
    * not found, no action is performed.
    */
   static void stop(const std::string &ident);
+  static void close(const std::string &ident);
   /**
    * Flushes and resets the specified log output stream based on its identifier.
    *
@@ -142,7 +143,6 @@ public:
   static bool full_running(const std::string &ident);
 
   // HINT: not implemented yet
-  static void close(std::string ident) = delete;
   static void remove(std::string ident) = delete;
   static void unset(std::string ident) = delete;
 
@@ -169,8 +169,7 @@ public:
    * @return A reference to the logging output stream if successful, or a null
    * stream if conditions do not permit logging.
    */
-  static std::ostream &stream(const char *ident, const char *file, int line,
-                              Level c = INFO);
+  static std::ostream &stream(const char *ident, const char *file, int line, Level c = INFO);
   static std::ostream &stream(const char *ident);
 
   /**
@@ -248,7 +247,7 @@ private:
   static bool registry_has_item_(std::string ident);
   static std::unique_ptr<log_registry_t> log_registry_;
 
-  static log_t* set_log_(log_settings_t* settings);
+  static log_t *set_log_(log_settings_t *settings);
   static std::unique_ptr<log_t> log_;
 
   /**
