@@ -35,6 +35,7 @@ struct log_settings_t {
   [[nodiscard]] std::string get_filename() const { return filename_; }
 
   [[nodiscard]] bool get_active() const { return active_; }
+  void set_active(const bool active) { active_ = active; }
 
   [[nodiscard]] std::optional<std::filesystem::path> get_directory() const {
     return directory_;
@@ -77,12 +78,17 @@ struct log_t {
 
   log_settings_t settings;
   std::ofstream stream;
-  bool running{};
 
   log_t() = default;
   explicit log_t(log_settings_t settings)
       : settings{std::move(settings)}, stream{std::ofstream()},
-        running{settings.get_active()} {}
+        running_{settings.get_active()} {}
+
+  bool is_running() const { return running_; }
+  void set_running(const bool running) { running_ = running; }
+private:
+  bool running_{};
+
 };
 
 using log_registry_t = std::unordered_map<std::string, log_t>;
