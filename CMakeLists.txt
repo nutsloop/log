@@ -41,7 +41,7 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${RELWITHDEBINFO_FLAGS} ${EXTRA_FLAGS}")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "${RELEASE_FLAGS} -Os ${EXTRA_FLAGS}")
 
 # Add the library
-add_library(${PROJECT_NAME} log.h++ ${SOURCES})
+add_library(${PROJECT_NAME} include/log.h++ ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIR})
 
 # Optional: Add SO versioning for shared libraries
