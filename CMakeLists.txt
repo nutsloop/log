@@ -24,9 +24,6 @@ set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include ${ANSI_ROOT_INCLUDE_DIR})
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 file(GLOB_RECURSE SOURCES ${SRC_DIR}/*.c++)
 
-# The ${CMAKE_BINARY_DIR} changes dynamically based on the build directory.
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
 # Optimization flags
 set(OPT_FLAGS "-O3 -march=native -flto")
 set(DEBUG_FLAGS "-g -O0 -fno-omit-frame-pointer -DDEBUG_LOG=true -DEXPERIMENTAL_INSTANCE=true")
