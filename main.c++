@@ -5,7 +5,7 @@
 #include <iostream>
 #include <random>
 #include <thread>
-
+using namespace nutsloop;
 #if DEBUG_LOG == false
 // Mock macros to provide `<<` compatibility
 
